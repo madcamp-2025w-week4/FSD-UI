@@ -3,7 +3,7 @@ import BrainView from './BrainView';
 import './StatusPanel.css';
 import { Battery, Lock, Sun, Wifi } from 'lucide-react';
 
-export default function StatusPanel() {
+export default function StatusPanel({ fsdSleep }) {
     // Tesla Gear State: P (Park), R (Reverse), N (Neutral), D (Drive)
     const [gear, setGear] = useState('P');
 
@@ -46,7 +46,7 @@ export default function StatusPanel() {
             {/* 3D Visualization Area (Car/Brain) */}
             <div className="viz-container">
                 <div className="brain-wrapper">
-                    <BrainView />
+                    <BrainView gear={gear} fsdSleep={fsdSleep && gear === 'D'} />
                 </div>
 
             </div>

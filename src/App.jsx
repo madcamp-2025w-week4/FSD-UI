@@ -7,6 +7,7 @@ import StatusPanel from './components/StatusPanel';
 
 function App() {
   const [statusMode, setStatusMode] = useState(false);
+  const [fsdSleep, setFsdSleep] = useState(false);
 
   return (
     <div className={`app-container ${statusMode ? 'status-active' : ''}`}>
@@ -15,10 +16,12 @@ function App() {
       <TopToolbar
         onToggleStatus={() => setStatusMode(!statusMode)}
         statusActive={statusMode}
+        fsdActive={fsdSleep}
+        onToggleFsd={() => setFsdSleep((prev) => !prev)}
       />
 
       {/* Tesla Status Panel - Full Height (Left) */}
-      {statusMode && <StatusPanel />}
+      {statusMode && <StatusPanel fsdSleep={fsdSleep} />}
 
       {/* Main Area (Right side when Status Active, or Full Screen) */}
       <div className="main-interface-column">

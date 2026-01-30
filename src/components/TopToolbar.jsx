@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronUp, ChevronDown, Activity } from 'lucide-react';
 import './TopToolbar.css';
 
-export default function TopToolbar({ onToggleStatus, statusActive }) {
+export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, onToggleFsd }) {
     const [expanded, setExpanded] = useState(true);
 
     return (
@@ -23,7 +23,10 @@ export default function TopToolbar({ onToggleStatus, statusActive }) {
                     <div className="divider-vertical" style={{ width: '1px', height: '20px', background: 'rgba(0,0,0,0.1)' }}></div>
 
                     {/* FSD Toggle Button (Central Prominent) */}
-                    <button className="fsd-btn">
+                    <button
+                        className={`fsd-btn ${fsdActive ? 'active' : ''}`}
+                        onClick={onToggleFsd}
+                    >
                         FSD
                     </button>
 
