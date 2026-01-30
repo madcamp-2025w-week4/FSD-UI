@@ -27,8 +27,7 @@
   width: 100%;
   overflow: hidden;
   position: relative;
-  /* Ensure no padding on row so sidebars touch edges */
-  padding: 0;
+  padding: 0 8px;
 }
 
 .center-panel {
@@ -37,10 +36,10 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 20px;
+  padding: 32px;
   /* Padding for the PDF placeholder itself */
   position: relative;
-  padding-top: 80px;
+  padding-top: 96px;
   /* Push content down below toolbar */
 }
 
@@ -48,9 +47,9 @@
   width: 100%;
   height: 100%;
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--border-separator);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,8 +1,8 @@
 :root {
   /* Colors - Apple / iOS System Colors */
-  --bg-app: #F2F2F7;
+  --bg-app: #F5F5F7;
   /* System Grouped Background */
-  --bg-surface-glass: rgba(255, 255, 255, 0.75);
+  --bg-surface-glass: rgba(255, 255, 255, 0.7);
   /* Translucent surface */
   --bg-surface-solid: #ffffff;
   --bg-yellow-pad: #fff9c4;
@@ -15,14 +15,15 @@
   --accent-red: #FF3B30;
   --accent-blue: #007AFF;
 
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --shadow-apple: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --shadow-apple: 0 12px 36px rgba(0, 0, 0, 0.12);
+  --shadow-floating: 0 20px 50px rgba(0, 0, 0, 0.16);
   /* Soft diffused shadow */
 
   /* Animation */
   --spring-duration: 0.6s;
   --spring-easing: cubic-bezier(0.25, 0.8, 0.25, 1);
-  --glass-blur: blur(20px) saturate(180%);
+  --glass-blur: blur(24px) saturate(180%);
 }
 
 html,
@@ -34,7 +35,7 @@ body,
   padding: 0;
   overflow: hidden;
   /* Subtle mesh gradient to show off glassmorphism */
-  background: radial-gradient(circle at 10% 20%, rgb(242, 242, 247) 0%, rgb(229, 229, 234) 90%);
+  background: radial-gradient(circle at 10% 20%, rgb(245, 245, 247) 0%, rgb(232, 232, 237) 90%);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
