@@ -1,0 +1,64 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-app);
+  transition: background-color 0.3s;
+}
+
+/* When Tesla Status Mode is active, the top container becomes a Row */
+.app-container.status-active {
+  flex-direction: row;
+}
+
+.main-interface-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-content-row {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  /* Ensure no padding on row so sidebars touch edges */
+  padding: 0;
+}
+
+.center-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px;
+  /* Padding for the PDF placeholder itself */
+  position: relative;
+  padding-top: 80px;
+  /* Push content down below toolbar */
+}
+
+.pdf-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-separator);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.pdf-placeholder h2 {
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}

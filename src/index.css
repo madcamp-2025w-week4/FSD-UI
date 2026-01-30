@@ -1,0 +1,55 @@
+:root {
+  /* Colors - Apple / iOS System Colors */
+  --bg-app: #F2F2F7;
+  /* System Grouped Background */
+  --bg-surface-glass: rgba(255, 255, 255, 0.75);
+  /* Translucent surface */
+  --bg-surface-solid: #ffffff;
+  --bg-yellow-pad: #fff9c4;
+  /* Keep for legal pad, but maybe soften */
+
+  --text-primary: #1c1c1e;
+  --text-secondary: #8e8e93;
+  --text-tertiary: #d1d1d6;
+
+  --accent-red: #FF3B30;
+  --accent-blue: #007AFF;
+
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --shadow-apple: 0 8px 32px rgba(0, 0, 0, 0.08);
+  /* Soft diffused shadow */
+
+  /* Animation */
+  --spring-duration: 0.6s;
+  --spring-easing: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --glass-blur: blur(20px) saturate(180%);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Subtle mesh gradient to show off glassmorphism */
+  background: radial-gradient(circle at 10% 20%, rgb(242, 242, 247) 0%, rgb(229, 229, 234) 90%);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+}

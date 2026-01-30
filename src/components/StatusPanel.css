@@ -1,0 +1,165 @@
+.status-panel-container {
+    width: 30vw;
+    min-width: 350px;
+    height: 100%;
+    background-color: #f4f4f4;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    z-index: 200;
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.status-top-bar {
+    display: flex;
+    justify-content: center;
+    /* Centered */
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.status-icons-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    /* Spacing between time/temp */
+}
+
+/* Gear Selector */
+.gear-selector {
+    display: flex;
+    justify-content: center;
+    /* Centered */
+    align-items: baseline;
+    /* Align P, R, N, D baselines */
+    gap: 24px;
+    font-family: "Gotham", "Segoe UI", sans-serif;
+    margin-bottom: 40px;
+    padding-left: 0;
+}
+
+.gear-item {
+    font-size: 18px;
+    color: #bbb;
+    /* Lighter inactive */
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.gear-item.active {
+    font-size: 64px;
+    /* Even bigger active gear */
+    color: #111;
+    font-weight: 400;
+    line-height: 0.8;
+    transform: translateY(4px);
+    /* Visual correction */
+}
+
+/* Speed / Info */
+.speed-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 0 10px;
+    color: #666;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.battery-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #444;
+}
+
+.speed-limit {
+    border: 3px solid #dcdcdc;
+    border-radius: 6px;
+    width: 48px;
+    height: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.speed-limit span {
+    font-size: 9px;
+    color: #777;
+    margin-bottom: 2px;
+}
+
+.speed-limit strong {
+    font-size: 22px;
+    color: #222;
+}
+
+/* 3D Viz */
+.viz-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+}
+
+.brain-wrapper {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+}
+
+.viz-label {
+    position: absolute;
+    bottom: 20px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #aaa;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Bottom Controls */
+.status-controls {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: auto;
+    padding-top: 30px;
+    padding-bottom: 10px;
+}
+
+.control-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    cursor: pointer;
+    transition: transform 0.1s;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
