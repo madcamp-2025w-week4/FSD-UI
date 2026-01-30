@@ -48,7 +48,7 @@ export default function StatusPanel() {
                 <div className="brain-wrapper">
                     <BrainView />
                 </div>
-                <div className="viz-label">CORTEX ACTIVE</div>
+
             </div>
 
             {/* Bottom Controls / Quick Actions */}
