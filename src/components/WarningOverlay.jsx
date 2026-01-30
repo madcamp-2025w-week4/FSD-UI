@@ -26,20 +26,23 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
   const rafRef = useRef(0);
   const startRef = useRef(0);
   const completeTimerRef = useRef(0);
+  const exitTimerRef = useRef(0);
+  const exitStartedRef = useRef(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const lastTypeRef = useRef(null);
-  const exitTimerRef = useRef(0);
 
   const copy = useMemo(() => ALERT_COPY[alertType], [alertType]);
 
   const startExit = (callback) => {
-    if (isExiting) return;
+    if (exitStartedRef.current) return;
+    exitStartedRef.current = true;
     setIsExiting(true);
     clearTimeout(exitTimerRef.current);
     exitTimerRef.current = setTimeout(() => {
       setIsVisible(false);
       setIsExiting(false);
+      exitStartedRef.current = false;
       if (callback) callback();
     }, EXIT_MS);
   };
@@ -49,16 +52,15 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
     lastTypeRef.current = alertType;
     setIsVisible(true);
     setIsExiting(false);
+    exitStartedRef.current = false;
     setProgress(0);
     setTimeLeft(3);
     clearTimeout(exitTimerRef.current);
     clearTimeout(completeTimerRef.current);
     cancelAnimationFrame(rafRef.current);
-    let mounted = true;
     startRef.current = performance.now();
 
     const tick = (now) => {
-      if (!mounted) return;
       const elapsed = now - startRef.current;
       const clamped = Math.min(elapsed, DURATION_MS);
       const nextProgress = clamped / DURATION_MS;
@@ -67,6 +69,10 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
       setTimeLeft(Math.max(0, Math.ceil(remaining / 1000)));
       if (elapsed < DURATION_MS) {
         rafRef.current = requestAnimationFrame(tick);
+      } else if (!exitStartedRef.current) {
+        startExit(() => {
+          if (onComplete) onComplete(alertType);
+        });
       }
     };
 
@@ -75,9 +81,9 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
       startExit(() => {
         if (onComplete) onComplete(alertType);
       });
-    }, DURATION_MS);
+    }, DURATION_MS + 50);
+
     return () => {
-      mounted = false;
       cancelAnimationFrame(rafRef.current);
       clearTimeout(completeTimerRef.current);
     };

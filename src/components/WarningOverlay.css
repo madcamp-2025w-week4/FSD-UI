@@ -18,10 +18,16 @@
   );
   opacity: 0.75;
   animation: breathe-edge 1s ease-in-out infinite;
+  transition: opacity 280ms ease;
 }
 
 .warning-overlay.is-enter {
   opacity: 1;
+}
+
+.warning-overlay.is-exiting::before {
+  opacity: 0;
+  animation: none;
 }
 
 .warning-card {
