@@ -1,0 +1,163 @@
+.warning-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 340;
+  opacity: 1;
+}
+
+.warning-overlay::before {
+  content: '';
+  position: absolute;
+  inset: -8%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 59, 48, 0) 50%,
+    rgba(255, 59, 48, 0.18) 72%,
+    rgba(255, 59, 48, 0.38) 100%
+  );
+  opacity: 0.75;
+  animation: breathe-edge 1s ease-in-out infinite;
+}
+
+.warning-overlay.is-enter {
+  opacity: 1;
+}
+
+.warning-card {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 22px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+  padding: 18px 24px 16px;
+  min-width: 360px;
+  text-align: center;
+  pointer-events: auto;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  opacity: 1;
+  transform: translate(-50%, -6px) scale(0);
+  animation-fill-mode: both;
+}
+
+.warning-overlay.is-enter .warning-card {
+  animation: ios-pop-in 760ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.warning-overlay.is-exiting .warning-card {
+  animation: ios-pop-out 680ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.warning-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111111;
+  margin-bottom: 4px;
+  margin-top: 6px;
+  letter-spacing: 0.2px;
+}
+
+.warning-message {
+  font-size: 15px;
+  color: #3a3a3a;
+  margin-bottom: 12px;
+}
+
+
+.tunnel-timer {
+  position: relative;
+  width: 200px;
+  height: 120px;
+  margin: 0 auto 10px;
+}
+
+.tunnel-timer svg {
+  width: 100%;
+  height: 100%;
+}
+
+.tunnel-track {
+  stroke: rgba(255, 59, 48, 0.15);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.tunnel-progress {
+  stroke: #ff3b30;
+  stroke-width: 12;
+  stroke-linecap: round;
+  transform-origin: center;
+}
+
+.tunnel-count {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  transform: translate(-50%, -50%);
+  font-size: 42px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.warning-cancel {
+  border: none;
+  background: #111111;
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.15s, background-color 0.2s;
+}
+
+.warning-cancel:hover {
+  background: #1d1d1d;
+}
+
+.warning-cancel:active {
+  transform: scale(0.98);
+}
+
+@keyframes breathe-edge {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes ios-pop-in {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -8px) scale(0);
+  }
+  55% {
+    transform: translate(-50%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes ios-pop-out {
+  0% {
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    transform: translate(-50%, 8px) scale(0);
+  }
+}

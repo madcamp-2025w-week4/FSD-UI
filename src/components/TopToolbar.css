@@ -94,6 +94,9 @@
     border-radius: 14px;
     background-color: rgba(0, 0, 0, 0.03);
     transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .tool-btn:hover {

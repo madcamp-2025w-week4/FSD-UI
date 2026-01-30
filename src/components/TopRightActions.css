@@ -1,0 +1,34 @@
+.top-right-actions {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: inline-flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  padding: 6px;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  z-index: 320;
+}
+
+.top-right-action-btn {
+  border: none;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 14px;
+  transition: background-color 0.2s, transform 0.15s;
+}
+
+.top-right-action-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.top-right-action-btn:active {
+  transform: scale(0.98);
+}

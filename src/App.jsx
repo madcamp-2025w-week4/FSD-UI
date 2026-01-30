@@ -4,10 +4,13 @@ import TopToolbar from './components/TopToolbar';
 import LeftSidebar from './components/LeftSidebar';
 import RightSidebar from './components/RightSidebar';
 import StatusPanel from './components/StatusPanel';
+import TopRightActions from './components/TopRightActions';
+import WarningOverlay from './components/WarningOverlay';
 
 function App() {
   const [statusMode, setStatusMode] = useState(false);
   const [fsdSleep, setFsdSleep] = useState(false);
+  const [alertType, setAlertType] = useState(null);
 
   return (
     <div className={`app-container ${statusMode ? 'status-active' : ''}`}>
@@ -18,6 +21,13 @@ function App() {
         statusActive={statusMode}
         fsdActive={fsdSleep}
         onToggleFsd={() => setFsdSleep((prev) => !prev)}
+      />
+
+      <TopRightActions onTrigger={(type) => setAlertType(type)} />
+      <WarningOverlay
+        alertType={alertType}
+        onCancel={() => setAlertType(null)}
+        onComplete={() => setAlertType(null)}
       />
 
       {/* Tesla Status Panel - Full Height (Left) */}
