@@ -1,12 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './LeftSidebar.css';
+import { usePdf } from '../context/PdfContext.jsx';
+import * as pdfjsLib from 'pdfjs-dist';
 
 export default function LeftSidebar() {
     const [expanded, setExpanded] = useState(true);
+    const { pdfDoc, pageCount, currentPage, setCurrentPage } = usePdf();
+    const [thumbs, setThumbs] = useState([]);
 
-    // Dummy slides (25 items)
-    const slides = Array.from({ length: 25 }, (_, i) => i + 1);
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/build/pdf.worker.min.mjs',
+        import.meta.url
+    ).toString();
+
+    useEffect(() => {
+        let cancelled = false;
+        async function renderThumbs() {
+            if (!pdfDoc) {
+                setThumbs([]);
+                return;
+            }
+            const nextThumbs = [];
+            for (let i = 1; i <= pageCount; i++) {
+                const page = await pdfDoc.getPage(i);
+                const viewport = page.getViewport({ scale: 0.2 });
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                await page.render({ canvasContext: ctx, viewport }).promise;
+                if (cancelled) return;
+                nextThumbs.push(canvas.toDataURL());
+            }
+            if (!cancelled) {
+                setThumbs(nextThumbs);
+            }
+        }
+        renderThumbs();
+        return () => {
+            cancelled = true;
+        };
+    }, [pdfDoc, pageCount]);
 
     return (
         <div className="sidebar-wrapper left">
@@ -14,14 +49,23 @@ export default function LeftSidebar() {
                 <div className={`sidebar-content ${expanded ? 'visible' : 'hidden'}`}>
                     <div className="sidebar-header">
                         <span>Lecture PDF</span>
-                        <span className="page-count">2/25</span>
+                        <span className="page-count">
+                            {pageCount > 0 ? `${currentPage}/${pageCount}` : '0/0'}
+                        </span>
                     </div>
 
                     <div className="slide-list scroll-area">
-                        {slides.map(idx => (
-                            <div key={idx} className={`slide-item ${idx === 2 ? 'active' : ''}`}>
+                        {(thumbs.length
+                            ? thumbs
+                            : Array.from({ length: Math.max(pageCount, 1) }, (_, i) => null)
+                        ).map((thumb, i) => (
+                            <div
+                                key={i}
+                                className={`slide-item ${i + 1 === currentPage ? 'active' : ''}`}
+                                onClick={() => setCurrentPage(i + 1)}
+                            >
                                 <div className="slide-thumbnail">
-                                    <span>{idx}</span>
+                                    {thumb ? <img src={thumb} alt={`Slide ${i + 1}`} /> : i + 1}
                                 </div>
                             </div>
                         ))}

@@ -6,6 +6,7 @@ import RightSidebar from './components/RightSidebar';
 import StatusPanel from './components/StatusPanel';
 import TopRightActions from './components/TopRightActions';
 import WarningOverlay from './components/WarningOverlay';
+import PdfViewer from './components/PdfViewer';
 
 function App() {
   const [statusMode, setStatusMode] = useState(false);
@@ -44,15 +45,7 @@ function App() {
 
           {/* Center Content (PDF Preview) */}
           <div className="center-panel">
-            <div className="pdf-placeholder">
-              <h2>Lecture Material Preview</h2>
-              <p>2 / 25</p>
-              {statusMode && (
-                <div style={{ marginTop: '20px', color: '#8e8e93', fontSize: '14px' }}>
-                  Interactive Status Mode
-                </div>
-              )}
-            </div>
+            <PdfViewer />
           </div>
 
           <RightSidebar />

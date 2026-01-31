@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp } from 'lucide-react';
+import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput } from 'lucide-react';
 import './TopToolbar.css';
 import FsdSignalStatus from './FsdSignalStatus';
+import { useRef } from 'react';
+import { usePdf } from '../context/PdfContext.jsx';
+import * as pdfjsLib from 'pdfjs-dist';
 
 export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, onToggleFsd }) {
     const [expanded, setExpanded] = useState(true);
+    const fileInputRef = useRef(null);
+    const { setDocument } = usePdf();
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/build/pdf.worker.min.mjs',
+        import.meta.url
+    ).toString();
 
     return (
         <div className="toolbar-wrapper">
@@ -32,6 +42,30 @@ export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, on
                     </button>
 
                     <div className="divider-vertical" style={{ width: '1px', height: '20px', background: 'rgba(0,0,0,0.1)' }}></div>
+
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="application/pdf"
+                        style={{ display: 'none' }}
+                        onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const arrayBuffer = await file.arrayBuffer();
+                            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                            const doc = await loadingTask.promise;
+                            setDocument(doc);
+                            e.target.value = '';
+                        }}
+                    />
+
+                    <button
+                        className="tool-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        <FileInput size={16} />
+                        <span>불러오기</span>
+                    </button>
 
                     {/* Secondary Buttons */}
                     <button className="tool-btn">

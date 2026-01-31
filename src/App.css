@@ -97,4 +97,5 @@
 .pdf-placeholder h2 {
   color: var(--text-primary);
   margin-bottom: 8px;
+  font-weight: 700;
 }

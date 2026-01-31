@@ -24,9 +24,9 @@ export default function RightSidebar() {
                     </div>
 
                     <div className="pad-body scroll-area">
-                        <div className="stt-line">streaming STT text</div>
-                        <div className="stt-line">streaming STT text</div>
-                        <div className="stt-line">streaming STT text</div>
+                        <div className="stt-line current">streaming STT text</div>
+                        <div className="stt-line past">streaming STT text</div>
+                        <div className="stt-line past">streaming STT text</div>
                     </div>
                 </div>
             </div>
