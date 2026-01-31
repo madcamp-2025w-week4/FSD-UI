@@ -2,14 +2,24 @@ import React, { useEffect, useRef } from 'react';
 import './PdfViewer.css';
 import { usePdf } from '../context/PdfContext.jsx';
 
-function PdfPage({ pdfDoc, pageNumber, scale = 1.2 }) {
+function PdfPage({ pdfDoc, pageNumber }) {
   const canvasRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const cancelRenderRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
     async function renderPage() {
-      if (!pdfDoc || !canvasRef.current) return;
+      if (!pdfDoc || !canvasRef.current || !wrapperRef.current) return;
       const page = await pdfDoc.getPage(pageNumber);
+      const baseViewport = page.getViewport({ scale: 1 });
+      const availableWidth = wrapperRef.current.clientWidth;
+      const availableHeight = wrapperRef.current.clientHeight;
+      if (!availableWidth || !availableHeight) return;
+      const scale = Math.min(
+        availableWidth / baseViewport.width,
+        availableHeight / baseViewport.height
+      );
       const viewport = page.getViewport({ scale });
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
@@ -19,13 +29,23 @@ function PdfPage({ pdfDoc, pageNumber, scale = 1.2 }) {
       if (cancelled) return;
     }
     renderPage();
+    const observer = new ResizeObserver(() => {
+      // Debounce limit to prevent layout thrashing during animation
+      if (cancelRenderRef.current) clearTimeout(cancelRenderRef.current);
+      cancelRenderRef.current = setTimeout(() => {
+        renderPage();
+      }, 300); // Wait for animation (0.6s) to settle mostly
+    });
+    observer.observe(wrapperRef.current);
     return () => {
       cancelled = true;
+      if (cancelRenderRef.current) clearTimeout(cancelRenderRef.current);
+      observer.disconnect();
     };
-  }, [pdfDoc, pageNumber, scale]);
+  }, [pdfDoc, pageNumber]);
 
   return (
-    <div className="pdf-page" data-page={pageNumber}>
+    <div className="pdf-page" data-page={pageNumber} ref={wrapperRef}>
       <canvas ref={canvasRef} />
     </div>
   );
@@ -94,7 +114,6 @@ export default function PdfViewer() {
               key={i + 1}
               pdfDoc={pdfDoc}
               pageNumber={i + 1}
-              scale={1.2}
             />
           ))}
         </div>

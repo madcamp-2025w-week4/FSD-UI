@@ -24,6 +24,14 @@
   --spring-duration: 0.6s;
   --spring-easing: cubic-bezier(0.25, 0.8, 0.25, 1);
   --glass-blur: blur(24px) saturate(180%);
+
+  /* Layout */
+  /* Layout - Fluid scaling based on 1920px baseline */
+  /* Sidebar: 260px / 1920 ~= 13.5vw -> Using 14vw for slightly better safe area */
+  --left-sidebar-width: 18vw;
+  --right-sidebar-width: 18vw;
+  /* Status Panel: Fixed 350px per user request */
+  --status-panel-width: 350px;
 }
 
 html,

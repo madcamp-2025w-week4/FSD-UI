@@ -29,13 +29,13 @@
     pointer-events: auto;
 
     /* Floating Margins */
-    margin-top: 24px;
-    margin-bottom: 24px;
-    margin-right: 24px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-right: 8px;
 }
 
 .sidebar-container.right.expanded {
-    width: 320px;
+    width: var(--right-sidebar-width);
     opacity: 1;
 }
 
@@ -65,7 +65,8 @@
     pointer-events: auto;
 
     border-radius: 100px;
-    margin-right: 12px;
+    margin-right: 0px;
+    /* Attached to Tab */
 }
 
 .right-handle:hover {

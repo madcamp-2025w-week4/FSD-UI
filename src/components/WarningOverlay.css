@@ -9,16 +9,18 @@
 .warning-overlay::before {
   content: '';
   position: absolute;
-  inset: -8%;
-  background: radial-gradient(
-    circle at center,
-    rgba(0, 0, 0, 0) 50%,
-    color-mix(in srgb, var(--alert-glow) 55%, transparent) 72%,
-    var(--alert-glow) 100%
-  );
-  opacity: 0.75;
+  inset: 0;
+  /* Changed from -8% to 0 to be more solid on screen edge */
+  background: radial-gradient(circle at center,
+      rgba(0, 0, 0, 0) 75%,
+      color-mix(in srgb, var(--alert-glow) 80%, transparent) 88%,
+      var(--alert-glow) 100%);
+  opacity: 1.0;
+  /* Fully Opaque */
   animation: breathe-edge 1s ease-in-out infinite;
   transition: opacity 280ms ease;
+  /* Add inset box shadow for darker edges */
+  box-shadow: inset 0 0 150px var(--alert-glow);
 }
 
 .warning-overlay.is-enter {
@@ -143,16 +145,18 @@
 
 @keyframes breathe-edge {
   0% {
-    opacity: 0.55;
-    transform: scale(0.96);
+    opacity: 0.6;
+    box-shadow: inset 0 0 100px var(--alert-glow);
   }
+
   50% {
-    opacity: 0.9;
-    transform: scale(1.02);
+    opacity: 1.0;
+    box-shadow: inset 0 0 200px var(--alert-glow);
   }
+
   100% {
-    opacity: 0.55;
-    transform: scale(0.96);
+    opacity: 0.6;
+    box-shadow: inset 0 0 100px var(--alert-glow);
   }
 }
 
@@ -161,9 +165,11 @@
     opacity: 1;
     transform: translate(-50%, -8px) scale(0);
   }
+
   55% {
     transform: translate(-50%, 0) scale(1.06);
   }
+
   100% {
     transform: translate(-50%, 0) scale(1);
   }
@@ -173,6 +179,7 @@
   0% {
     transform: translate(-50%, 0) scale(1);
   }
+
   100% {
     transform: translate(-50%, 8px) scale(0);
   }

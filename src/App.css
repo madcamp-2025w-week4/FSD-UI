@@ -23,15 +23,15 @@
   opacity: 0;
   pointer-events: none;
   transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
-              opacity 260ms ease,
-              width 0ms linear 420ms;
+    opacity 260ms ease,
+    width 0ms linear 420ms;
   z-index: 220;
   overflow: hidden;
 }
 
 .status-panel-shell.open {
-  width: 30vw;
-  min-width: 350px;
+  width: var(--status-panel-width);
+  min-width: var(--status-panel-width);
   transform: translateX(0%);
   opacity: 1;
   pointer-events: auto;
@@ -54,7 +54,7 @@
 }
 
 .app-container.status-active .main-interface-column {
-  padding-left: max(350px, 30vw);
+  padding-left: var(--status-panel-width);
   transition: padding-left 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -73,7 +73,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 0 24px;
+  padding: 0 8px;
   /* Padding for the PDF placeholder itself */
   position: relative;
   padding-top: 0;

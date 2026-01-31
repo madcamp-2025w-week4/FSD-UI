@@ -1,6 +1,5 @@
 .status-panel-container {
-    width: 30vw;
-    min-width: 350px;
+    width: 100%;
     height: 100%;
     background-color: #f4f4f4;
     border-radius: 0;

@@ -3,6 +3,7 @@
   top: 14px;
   right: 16px;
   display: inline-flex;
+  align-items: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -12,6 +13,36 @@
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
   z-index: 320;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.top-right-actions.closed {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 6px;
+}
+
+.toggle-actions-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  /* Subtle background for the toggle */
+  border-radius: 50%;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.toggle-actions-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.actions-list {
+  display: flex;
+  gap: 8px;
 }
 
 .top-right-action-btn {
@@ -23,6 +54,7 @@
   padding: 6px 12px;
   border-radius: 14px;
   transition: background-color 0.2s, transform 0.15s;
+  white-space: nowrap;
 }
 
 .top-right-action-btn:hover {

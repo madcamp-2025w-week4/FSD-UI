@@ -7,6 +7,7 @@ import StatusPanel from './components/StatusPanel';
 import TopRightActions from './components/TopRightActions';
 import WarningOverlay from './components/WarningOverlay';
 import PdfViewer from './components/PdfViewer';
+import FsdSignalStatus from './components/FsdSignalStatus';
 
 function App() {
   const [statusMode, setStatusMode] = useState(false);
@@ -30,6 +31,8 @@ function App() {
         onCancel={() => setAlertType(null)}
         onComplete={() => setAlertType(null)}
       />
+
+      <FsdSignalStatus enabled={fsdSleep} />
 
       {/* Tesla Status Panel - Full Height (Left) */}
       <div className={`status-panel-shell ${statusMode ? 'open' : 'closed'}`}>

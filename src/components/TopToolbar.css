@@ -15,7 +15,8 @@
 .toolbar-row {
     display: inline-flex;
     align-items: center;
-    margin-top: 16px;
+    margin-top: 12px;
+    /* Increased from 8px for better top breathing room */
     pointer-events: none;
     position: relative;
 }
@@ -26,8 +27,9 @@
     -webkit-backdrop-filter: var(--glass-blur);
 
     width: fit-content;
-    min-width: 200px;
-    border-radius: 26px;
+    min-width: 180px;
+    border-radius: 22px;
+    /* Increased from 20px */
     border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 
@@ -42,7 +44,8 @@
 }
 
 .toolbar-container.expanded {
-    height: 46px;
+    height: 42px;
+    /* Increased from 38px (+10%) */
     opacity: 1;
 }
 
@@ -57,7 +60,9 @@
     justify-content: center;
     height: 100%;
     padding: 0 12px;
-    gap: 12px;
+    /* Increased from 10px */
+    gap: 10px;
+    /* Increased from 8px */
     transition: opacity 0.2s;
 }
 
@@ -76,8 +81,11 @@
     color: #c1271a;
     font-weight: 600;
     font-size: 14px;
-    padding: 6px 16px;
-    border-radius: 18px;
+    /* Restored to 14px */
+    padding: 6px 14px;
+    /* Increased from 5px 12px */
+    border-radius: 16px;
+    /* Increased from 14px */
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -100,14 +108,17 @@
 .tool-btn {
     color: var(--text-primary);
     font-size: 14px;
+    /* Restored to 14px */
     font-weight: 500;
     padding: 6px 12px;
-    border-radius: 18px;
+    /* Increased from 5px 10px */
+    border-radius: 16px;
+    /* Increased from 14px */
     background-color: rgba(0, 0, 0, 0.03);
     transition: background-color 0.2s;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 }
 
 .tool-btn:hover {
