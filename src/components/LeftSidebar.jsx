@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './LeftSidebar.css';
 import { usePdf } from '../context/PdfContext.jsx';
@@ -8,6 +8,7 @@ export default function LeftSidebar() {
     const [expanded, setExpanded] = useState(true);
     const { pdfDoc, pageCount, currentPage, setCurrentPage } = usePdf();
     const [thumbs, setThumbs] = useState([]);
+    const listRef = useRef(null);
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
         'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -43,6 +44,14 @@ export default function LeftSidebar() {
         };
     }, [pdfDoc, pageCount]);
 
+    useEffect(() => {
+        if (!listRef.current) return;
+        const active = listRef.current.querySelector('.slide-item.active');
+        if (active) {
+            active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+    }, [currentPage]);
+
     return (
         <div className="sidebar-wrapper left">
             <div className={`sidebar-container left ${expanded ? 'expanded' : 'collapsed'}`}>
@@ -54,7 +63,7 @@ export default function LeftSidebar() {
                         </span>
                     </div>
 
-                    <div className="slide-list scroll-area">
+                    <div className="slide-list scroll-area" ref={listRef}>
                         {(thumbs.length
                             ? thumbs
                             : Array.from({ length: Math.max(pageCount, 1) }, (_, i) => null)
@@ -62,11 +71,14 @@ export default function LeftSidebar() {
                             <div
                                 key={i}
                                 className={`slide-item ${i + 1 === currentPage ? 'active' : ''}`}
+                                onMouseDown={() => setCurrentPage(i + 1)}
+                                onTouchStart={() => setCurrentPage(i + 1)}
                                 onClick={() => setCurrentPage(i + 1)}
                             >
                                 <div className="slide-thumbnail">
                                     {thumb ? <img src={thumb} alt={`Slide ${i + 1}`} /> : i + 1}
                                 </div>
+                                <div className="slide-number">{i + 1}</div>
                             </div>
                         ))}
                     </div>

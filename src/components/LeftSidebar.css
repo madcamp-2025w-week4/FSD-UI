@@ -99,9 +99,11 @@
 
 .slide-item {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     position: relative;
     flex-shrink: 0;
+    padding: 6px;
 }
 
 .slide-thumbnail {
@@ -116,11 +118,18 @@
     color: var(--text-secondary);
     font-size: 18px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: none;
     overflow: hidden;
     box-shadow:
         0 8px 20px rgba(0, 0, 0, 0.08),
         0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+.slide-number {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8e8e93;
 }
 
 .slide-thumbnail img {
@@ -133,11 +142,18 @@
     border-color: transparent;
     box-shadow:
         0 12px 26px rgba(0, 122, 255, 0.18),
+        0 0 0 3px rgba(0, 122, 255, 0.7),
         0 0 0 1px rgba(255, 255, 255, 0.7) inset;
     background-color: rgba(0, 122, 255, 0.12);
     color: #0a5fd4;
     transform: translateY(-2px);
 }
+
+.slide-item.active .slide-number {
+    color: #0a5fd4;
+}
+
+/* selection outline only around thumbnail, not the number */
 
 .slide-item:hover .slide-thumbnail {
     transform: translateY(-2px);
