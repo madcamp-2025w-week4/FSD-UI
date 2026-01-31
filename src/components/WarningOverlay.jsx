@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './WarningOverlay.css';
+import { TriangleAlert } from 'lucide-react';
 
 const DURATION_MS = 3000;
 const EXIT_MS = 1200;
@@ -8,15 +9,27 @@ const TIMER_PATH_LENGTH = 100;
 const ALERT_COPY = {
   sleep: {
     title: '졸음 감지!',
-    message: '곧 FSD가 자동 실행됩니다.'
+    message: '곧 FSD가 자동 실행됩니다.',
+    accent: '#ff3b30',
+    glow: 'rgba(255, 59, 48, 0.38)'
+  },
+  checkin: {
+    title: '출석 시작 감지됨!',
+    message: '출석 유형 감지를 시작합니다.',
+    accent: '#f2b400',
+    glow: 'rgba(242, 180, 0, 0.38)'
   },
   rollcall: {
     title: '호명 출석 감지!',
-    message: '곧 자동으로 대답합니다.'
+    message: '곧 자동으로 대답합니다.',
+    accent: '#ff3b30',
+    glow: 'rgba(255, 59, 48, 0.38)'
   },
   attendance: {
     title: '전자 출석 감지!',
-    message: '곧 자동으로 출결 절차를 실행합니다.'
+    message: '곧 자동으로 출결 절차를 실행합니다.',
+    accent: '#ff3b30',
+    glow: 'rgba(255, 59, 48, 0.38)'
   }
 };
 
@@ -101,7 +114,13 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
   if (!isVisible || !activeCopy) return null;
 
   return (
-    <div className={`warning-overlay ${isExiting ? 'is-exiting' : 'is-enter'}`}>
+    <div
+      className={`warning-overlay ${isExiting ? 'is-exiting' : 'is-enter'}`}
+      style={{
+        '--alert-accent': activeCopy.accent,
+        '--alert-glow': activeCopy.glow
+      }}
+    >
       <div className="warning-card">
         <div className="tunnel-timer">
           <svg viewBox="0 0 200 120">
@@ -123,7 +142,12 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
           <div className="tunnel-count">{timeLeft}</div>
         </div>
 
-        <div className="warning-title">{activeCopy.title}</div>
+        <div className="warning-title">
+          <span className="warning-icon">
+            <TriangleAlert size={16} />
+          </span>
+          {activeCopy.title}
+        </div>
         <div className="warning-message">{activeCopy.message}</div>
 
         <button

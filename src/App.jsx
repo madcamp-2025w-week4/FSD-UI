@@ -31,7 +31,9 @@ function App() {
       />
 
       {/* Tesla Status Panel - Full Height (Left) */}
-      {statusMode && <StatusPanel fsdSleep={fsdSleep} />}
+      <div className={`status-panel-shell ${statusMode ? 'open' : 'closed'}`}>
+        <StatusPanel fsdSleep={fsdSleep} />
+      </div>
 
       {/* Main Area (Right side when Status Active, or Full Screen) */}
       <div className="main-interface-column">

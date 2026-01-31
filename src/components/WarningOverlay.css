@@ -12,9 +12,9 @@
   inset: -8%;
   background: radial-gradient(
     circle at center,
-    rgba(255, 59, 48, 0) 50%,
-    rgba(255, 59, 48, 0.18) 72%,
-    rgba(255, 59, 48, 0.38) 100%
+    rgba(0, 0, 0, 0) 50%,
+    color-mix(in srgb, var(--alert-glow) 55%, transparent) 72%,
+    var(--alert-glow) 100%
   );
   opacity: 0.75;
   animation: breathe-edge 1s ease-in-out infinite;
@@ -67,6 +67,16 @@
   margin-bottom: 4px;
   margin-top: 6px;
   letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.warning-icon {
+  color: var(--alert-accent);
+  display: inline-flex;
+  align-items: center;
 }
 
 .warning-message {
@@ -89,13 +99,13 @@
 }
 
 .tunnel-track {
-  stroke: rgba(255, 59, 48, 0.15);
+  stroke: color-mix(in srgb, var(--alert-accent) 18%, transparent);
   stroke-width: 12;
   stroke-linecap: round;
 }
 
 .tunnel-progress {
-  stroke: #ff3b30;
+  stroke: var(--alert-accent);
   stroke-width: 12;
   stroke-linecap: round;
   transform-origin: center;

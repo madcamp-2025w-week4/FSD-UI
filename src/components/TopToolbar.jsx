@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp } from 'lucide-react';
 import './TopToolbar.css';
+import FsdSignalStatus from './FsdSignalStatus';
 
 export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, onToggleFsd }) {
     const [expanded, setExpanded] = useState(true);
 
     return (
         <div className="toolbar-wrapper">
-            <div className={`toolbar-container ${expanded ? 'expanded' : 'collapsed'}`}>
-                <div className={`toolbar-content ${expanded ? 'visible' : 'hidden'}`}>
+            <div className="toolbar-row">
+                <div className={`toolbar-container ${expanded ? 'expanded' : 'collapsed'}`}>
+                    <div className={`toolbar-content ${expanded ? 'visible' : 'hidden'}`}>
 
                     {/* Status Toggle Button (New) */}
                     <button
@@ -44,7 +46,10 @@ export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, on
                         <CircleHelp size={16} />
                         <span>질문</span>
                     </button>
+
+                    </div>
                 </div>
+                <FsdSignalStatus enabled={fsdActive} />
             </div>
 
             {/* Collapse Handle */}

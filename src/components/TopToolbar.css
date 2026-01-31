@@ -12,6 +12,14 @@
     pointer-events: none;
 }
 
+.toolbar-row {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 16px;
+    pointer-events: none;
+    position: relative;
+}
+
 .toolbar-container {
     background-color: var(--bg-surface-glass);
     backdrop-filter: var(--glass-blur);
@@ -35,13 +43,11 @@
 
 .toolbar-container.expanded {
     height: 52px;
-    margin-top: 16px;
     opacity: 1;
 }
 
 .toolbar-container.collapsed {
     height: 0px;
-    margin-top: 0px;
     opacity: 0;
 }
 

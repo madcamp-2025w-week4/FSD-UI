@@ -3,6 +3,7 @@ import './TopRightActions.css';
 
 const ACTIONS = [
   { id: 'sleep', label: '잠' },
+  { id: 'checkin', label: '출석 감지' },
   { id: 'rollcall', label: '호명 출석' },
   { id: 'attendance', label: '전자 출석' }
 ];

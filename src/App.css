@@ -5,11 +5,43 @@
   width: 100%;
   background-color: var(--bg-app);
   transition: background-color 0.3s;
+  position: relative;
 }
 
 /* When Tesla Status Mode is active, the top container becomes a Row */
 .app-container.status-active {
   flex-direction: row;
+}
+
+.status-panel-shell {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
+              opacity 260ms ease,
+              width 0ms linear 420ms;
+  z-index: 220;
+  overflow: hidden;
+}
+
+.status-panel-shell.open {
+  width: 30vw;
+  min-width: 350px;
+  transform: translateX(0%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.status-panel-shell.closed {
+  width: 0;
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .main-interface-column {
@@ -19,6 +51,11 @@
   height: 100%;
   position: relative;
   overflow: hidden;
+}
+
+.app-container.status-active .main-interface-column {
+  padding-left: max(350px, 30vw);
+  transition: padding-left 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .main-content-row {
