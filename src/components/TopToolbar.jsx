@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput } from 'lucide-react';
+import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput, Car } from 'lucide-react';
 import './TopToolbar.css';
 import FsdSignalStatus from './FsdSignalStatus';
 import { useRef } from 'react';
@@ -27,7 +27,7 @@ export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, on
                         className={`tool-btn ${statusActive ? 'active-status' : ''}`}
                         onClick={onToggleStatus}
                     >
-                        <Activity size={16} />
+                        <Activity size={14} />
                         <span>상태</span>
                     </button>
 
@@ -38,6 +38,7 @@ export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, on
                         className={`fsd-btn ${fsdActive ? 'active' : ''}`}
                         onClick={onToggleFsd}
                     >
+                        <Car size={14} />
                         FSD
                     </button>
 
@@ -63,21 +64,21 @@ export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, on
                         className="tool-btn"
                         onClick={() => fileInputRef.current?.click()}
                     >
-                        <FileInput size={16} />
+                        <FileInput size={14} />
                         <span>불러오기</span>
                     </button>
 
                     {/* Secondary Buttons */}
                     <button className="tool-btn">
-                        <AudioLines size={16} />
+                        <AudioLines size={14} />
                         <span>STT</span>
                     </button>
                     <button className="tool-btn">
-                        <FileText size={16} />
+                        <FileText size={14} />
                         <span>요약</span>
                     </button>
                     <button className="tool-btn">
-                        <CircleHelp size={16} />
+                        <CircleHelp size={14} />
                         <span>질문</span>
                     </button>
 

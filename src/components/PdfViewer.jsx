@@ -41,9 +41,19 @@ export default function PdfViewer() {
     const target = containerRef.current.querySelector(
       `.pdf-page[data-page="${currentPage}"]`
     );
-    if (target) {
-      target.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    }
+    if (!target) return;
+    const container = containerRef.current;
+    requestAnimationFrame(() => {
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const containerCenter = containerRect.top + containerRect.height / 2;
+      const targetCenter = targetRect.top + targetRect.height / 2;
+      const delta = targetCenter - containerCenter;
+      container.scrollTo({
+        top: container.scrollTop + delta,
+        behavior: 'smooth'
+      });
+    });
   }, [pdfDoc, currentPage]);
 
   return (
@@ -54,7 +64,8 @@ export default function PdfViewer() {
         if (!containerRef.current || !pdfDoc) return;
         cancelAnimationFrame(rafRef.current);
         rafRef.current = requestAnimationFrame(() => {
-          const containerTop = containerRef.current.getBoundingClientRect().top;
+          const containerRect = containerRef.current.getBoundingClientRect();
+          const containerCenter = containerRect.top + containerRect.height / 2;
           const pages = Array.from(
             containerRef.current.querySelectorAll('.pdf-page')
           );
@@ -62,7 +73,8 @@ export default function PdfViewer() {
           let bestDistance = Number.POSITIVE_INFINITY;
           pages.forEach((el) => {
             const rect = el.getBoundingClientRect();
-            const distance = Math.abs(rect.top - containerTop);
+            const pageCenter = rect.top + rect.height / 2;
+            const distance = Math.abs(pageCenter - containerCenter);
             const pageNum = Number(el.getAttribute('data-page'));
             if (distance < bestDistance) {
               bestDistance = distance;
