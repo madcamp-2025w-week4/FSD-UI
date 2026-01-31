@@ -2,17 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import './PdfViewer.css';
 import { usePdf } from '../context/PdfContext.jsx';
 
-export default function PdfViewer() {
+function PdfPage({ pdfDoc, pageNumber, scale = 1.2 }) {
   const canvasRef = useRef(null);
-  const { pdfDoc, currentPage, pageCount, setCurrentPage } = usePdf();
-  const lastWheelRef = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
     async function renderPage() {
       if (!pdfDoc || !canvasRef.current) return;
-      const page = await pdfDoc.getPage(currentPage);
-      const viewport = page.getViewport({ scale: 1.2 });
+      const page = await pdfDoc.getPage(pageNumber);
+      const viewport = page.getViewport({ scale });
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       canvas.width = viewport.width;
@@ -24,25 +22,70 @@ export default function PdfViewer() {
     return () => {
       cancelled = true;
     };
+  }, [pdfDoc, pageNumber, scale]);
+
+  return (
+    <div className="pdf-page" data-page={pageNumber}>
+      <canvas ref={canvasRef} />
+    </div>
+  );
+}
+
+export default function PdfViewer() {
+  const containerRef = useRef(null);
+  const rafRef = useRef(0);
+  const { pdfDoc, currentPage, pageCount, setCurrentPage } = usePdf();
+
+  useEffect(() => {
+    if (!pdfDoc || !containerRef.current) return;
+    const target = containerRef.current.querySelector(
+      `.pdf-page[data-page="${currentPage}"]`
+    );
+    if (target) {
+      target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
   }, [pdfDoc, currentPage]);
 
-    return (
+  return (
     <div
       className="pdf-viewer"
-      onWheel={(e) => {
-        if (!pdfDoc || pageCount < 1) return;
-        const now = performance.now();
-        if (now - lastWheelRef.current < 250) return;
-        lastWheelRef.current = now;
-        if (e.deltaY > 0 && currentPage < pageCount) {
-          setCurrentPage(currentPage + 1);
-        } else if (e.deltaY < 0 && currentPage > 1) {
-          setCurrentPage(currentPage - 1);
-        }
+      ref={containerRef}
+      onScroll={() => {
+        if (!containerRef.current || !pdfDoc) return;
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = requestAnimationFrame(() => {
+          const containerTop = containerRef.current.getBoundingClientRect().top;
+          const pages = Array.from(
+            containerRef.current.querySelectorAll('.pdf-page')
+          );
+          let bestPage = currentPage;
+          let bestDistance = Number.POSITIVE_INFINITY;
+          pages.forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            const distance = Math.abs(rect.top - containerTop);
+            const pageNum = Number(el.getAttribute('data-page'));
+            if (distance < bestDistance) {
+              bestDistance = distance;
+              bestPage = pageNum;
+            }
+          });
+          if (bestPage !== currentPage) {
+            setCurrentPage(bestPage);
+          }
+        });
       }}
     >
       {pdfDoc ? (
-        <canvas ref={canvasRef} />
+        <div className="pdf-pages">
+          {Array.from({ length: pageCount }, (_, i) => (
+            <PdfPage
+              key={i + 1}
+              pdfDoc={pdfDoc}
+              pageNumber={i + 1}
+              scale={1.2}
+            />
+          ))}
+        </div>
       ) : (
         <div className="pdf-empty">
           <h2>Lecture Material Preview</h2>

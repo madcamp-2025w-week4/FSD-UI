@@ -73,10 +73,10 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 32px;
+  padding: 0 24px;
   /* Padding for the PDF placeholder itself */
   position: relative;
-  padding-top: 96px;
+  padding-top: 0;
   /* Push content down below toolbar */
 }
 

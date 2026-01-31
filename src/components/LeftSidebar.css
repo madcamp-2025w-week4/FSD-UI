@@ -32,7 +32,7 @@
     pointer-events: auto;
 
     /* Floating Margins */
-    margin-top: 84px;
+    margin-top: 24px;
     /* Clear the absolute toolbar (52px + 16px + buffer) */
     margin-bottom: 24px;
     margin-left: 24px;
