@@ -21,7 +21,7 @@ export default function VoiceEnrollModal({ open, onClose, onComplete }) {
 
   return (
     <ModalShell open={open}>
-      <div className="voice-title">학습 데이터 수집 중... ({step}/{TOTAL} 문장)</div>
+      <div className="voice-title">학습 데이터 수집({step}/{TOTAL})</div>
       <div className="voice-sentence">{sentence}</div>
       <div className="voice-wave">
         {Array.from({ length: 24 }, (_, i) => (
@@ -47,7 +47,7 @@ export default function VoiceEnrollModal({ open, onClose, onComplete }) {
       </div>
       {step === TOTAL && (
         <div className="voice-finish">
-          학습이 완료되었습니다. 제 목소리가 주인님과 비슷해졌나요?
+          학습이 완료되었습니다. 제 목소리가 사용자님과 비슷해졌나요?
         </div>
       )}
     </ModalShell>

@@ -1,4 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+
 .landing-root {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -26,7 +29,7 @@
 }
 
 .landing-motto {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 500;
   color: #ebebf5;
   letter-spacing: 0.01em;

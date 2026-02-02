@@ -11,10 +11,11 @@
 }
 
 .modal-card {
-  width: min(760px, 88vw);
+  width: min(520px, 86vw);
+  max-height: 78vh;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 24px;
+  border-radius: 28px;
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.18);
-  padding: 28px 30px;
+  padding: 30px 28px;
 }
