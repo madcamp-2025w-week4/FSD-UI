@@ -42,7 +42,7 @@ export default function VoiceEnrollModal({ open, onClose, onComplete }) {
             }
           }}
         >
-          {step < TOTAL ? '녹음 완료' : '완료'}
+          {step < TOTAL ? '다음' : '완료'}
         </button>
       </div>
       {step === TOTAL && (

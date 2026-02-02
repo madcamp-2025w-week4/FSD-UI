@@ -12,6 +12,8 @@
   color: #3a3a3a;
   font-size: 14px;
   line-height: 1.6;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
 .consent-body h4 {
@@ -22,6 +24,19 @@
 
 .consent-body ul {
   margin: 6px 0 10px 18px;
+}
+
+.consent-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.consent-body::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.consent-body::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .consent-check {
