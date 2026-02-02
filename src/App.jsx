@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.css';
 import TopToolbar from './components/TopToolbar';
 import LeftSidebar from './components/LeftSidebar';
@@ -12,6 +12,7 @@ import ConsentModal from './components/ConsentModal';
 import VoiceEnrollModal from './components/VoiceEnrollModal';
 import ReadyToast from './components/ReadyToast';
 import FsdSignalStatus from './components/FsdSignalStatus';
+import { useFsdPipeline } from './hooks/useFsdPipeline';
 
 function App() {
   const [statusMode, setStatusMode] = useState(false);
@@ -22,6 +23,24 @@ function App() {
   const [showConsent, setShowConsent] = useState(false);
   const [showEnroll, setShowEnroll] = useState(false);
   const [showReady, setShowReady] = useState(false);
+
+  const mode = useMemo(() => {
+    if (gear === 'P') return 'note';
+    return fsdSleep ? 'defense' : 'lecture';
+  }, [fsdSleep, gear]);
+
+  const ttsConfig = useMemo(() => ({
+    refAudioPath: localStorage.getItem('fsd_tts_ref_audio') || '',
+    promptText: localStorage.getItem('fsd_tts_prompt_text') || '',
+  }), []);
+
+  const {
+    sttLines,
+    status: sttStatus,
+    error: sttError,
+    requestSummary,
+    clearTranscript,
+  } = useFsdPipeline({ mode, ttsConfig });
 
   if (stage === 'landing') {
     return (
@@ -52,6 +71,10 @@ function App() {
             return next;
           });
         }}
+        onRequestSummary={requestSummary}
+        onClearTranscript={clearTranscript}
+        sttStatus={sttStatus}
+        sttError={sttError}
       />
 
       <TopRightActions onTrigger={(type) => setAlertType(type)} />
@@ -104,7 +127,7 @@ function App() {
             <PdfViewer />
           </div>
 
-          <RightSidebar />
+          <RightSidebar sttLines={sttLines} />
         </div>
       </div>
     </div>

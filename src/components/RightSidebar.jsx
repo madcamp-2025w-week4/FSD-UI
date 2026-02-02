@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './RightSidebar.css';
 
-export default function RightSidebar() {
+export default function RightSidebar({ sttLines = [] }) {
     const [expanded, setExpanded] = useState(true);
 
     return (
@@ -24,9 +24,17 @@ export default function RightSidebar() {
                     </div>
 
                     <div className="pad-body scroll-area">
-                        <div className="stt-line current">streaming STT text</div>
-                        <div className="stt-line past">streaming STT text</div>
-                        <div className="stt-line past">streaming STT text</div>
+                        {sttLines.length === 0 && (
+                            <div className="stt-line past">STT 대기 중…</div>
+                        )}
+                        {sttLines.map((entry, idx) => (
+                            <div
+                                key={`${entry.ts ?? idx}-${idx}`}
+                                className={`stt-line ${idx === sttLines.length - 1 ? 'current' : 'past'}`}
+                            >
+                                {entry.text ?? entry}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

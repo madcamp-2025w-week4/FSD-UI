@@ -168,3 +168,15 @@
     background-color: rgba(255, 255, 255, 0.9);
     color: var(--text-secondary);
 }
+
+.toolbar-status,
+.toolbar-error {
+    margin: 6px auto 0;
+    font-size: 12px;
+    text-align: center;
+    color: var(--text-tertiary);
+}
+
+.toolbar-error {
+    color: #d64545;
+}
