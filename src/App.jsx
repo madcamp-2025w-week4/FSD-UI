@@ -101,6 +101,8 @@ function App() {
     error: sttError,
     requestSummary,
     clearTranscript,
+    downloadTranscript,
+    downloadRecording,
   } = useFsdPipeline({ mode, ttsConfig });
 
   if (stage === 'landing') {
@@ -145,6 +147,8 @@ function App() {
         }}
         onRequestSummary={requestSummary}
         onClearTranscript={clearTranscript}
+        onDownloadTranscript={downloadTranscript}
+        onDownloadRecording={downloadRecording}
         sttStatus={sttStatus}
         sttError={sttError}
       />

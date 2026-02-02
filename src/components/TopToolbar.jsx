@@ -12,6 +12,8 @@ export default function TopToolbar({
     onToggleFsd,
     onRequestSummary,
     onClearTranscript,
+    onDownloadTranscript,
+    onDownloadRecording,
     sttStatus,
     sttError,
 }) {
@@ -92,6 +94,22 @@ export default function TopToolbar({
                         >
                             <FileText size={14} />
                             <span>요약</span>
+                        </button>
+                        <button
+                            className="tool-btn"
+                            onClick={() => onDownloadTranscript?.()}
+                            title="전체 텍스트 저장"
+                        >
+                            <FileText size={14} />
+                            <span>텍스트 저장</span>
+                        </button>
+                        <button
+                            className="tool-btn"
+                            onClick={() => onDownloadRecording?.()}
+                            title="전체 녹음 저장"
+                        >
+                            <AudioLines size={14} />
+                            <span>녹음 저장</span>
                         </button>
                         <button
                             className="tool-btn"
