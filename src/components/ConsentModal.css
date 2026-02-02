@@ -1,0 +1,65 @@
+.consent-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1c1c1e;
+  margin-bottom: 14px;
+}
+
+.consent-body {
+  max-height: 44vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  color: #3a3a3a;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.consent-body h4 {
+  margin: 16px 0 6px;
+  font-size: 14px;
+  color: #1c1c1e;
+}
+
+.consent-body ul {
+  margin: 6px 0 10px 18px;
+}
+
+.consent-check {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  color: #1c1c1e;
+  align-items: flex-start;
+}
+
+.consent-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.consent-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.consent-btn.primary {
+  background: #111111;
+  color: white;
+}
+
+.consent-btn.primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.consent-btn.ghost {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1c1c1e;
+}

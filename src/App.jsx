@@ -7,12 +7,32 @@ import StatusPanel from './components/StatusPanel';
 import TopRightActions from './components/TopRightActions';
 import WarningOverlay from './components/WarningOverlay';
 import PdfViewer from './components/PdfViewer';
+import LandingPage from './components/LandingPage';
+import ConsentModal from './components/ConsentModal';
+import VoiceEnrollModal from './components/VoiceEnrollModal';
+import ReadyToast from './components/ReadyToast';
 import FsdSignalStatus from './components/FsdSignalStatus';
 
 function App() {
   const [statusMode, setStatusMode] = useState(false);
   const [fsdSleep, setFsdSleep] = useState(false);
   const [alertType, setAlertType] = useState(null);
+  const [stage, setStage] = useState('landing'); // landing | app
+  const [showConsent, setShowConsent] = useState(false);
+  const [showEnroll, setShowEnroll] = useState(false);
+  const [showReady, setShowReady] = useState(false);
+
+  if (stage === 'landing') {
+    return (
+      <LandingPage
+        onLogin={() => setStage('app')}
+        onSignup={() => {
+          setStage('app');
+          setShowConsent(true);
+        }}
+      />
+    );
+  }
 
   return (
     <div className={`app-container ${statusMode ? 'status-active' : ''}`}>
@@ -30,6 +50,26 @@ function App() {
         alertType={alertType}
         onCancel={() => setAlertType(null)}
         onComplete={() => setAlertType(null)}
+      />
+      <ConsentModal
+        open={showConsent}
+        onClose={() => setShowConsent(false)}
+        onAgree={() => {
+          setShowConsent(false);
+          setShowEnroll(true);
+        }}
+      />
+      <VoiceEnrollModal
+        open={showEnroll}
+        onClose={() => setShowEnroll(false)}
+        onComplete={() => {
+          setShowEnroll(false);
+          setShowReady(true);
+        }}
+      />
+      <ReadyToast
+        open={showReady}
+        onDone={() => setShowReady(false)}
       />
 
       <FsdSignalStatus enabled={fsdSleep} />
