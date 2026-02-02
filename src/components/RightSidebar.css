@@ -46,6 +46,13 @@
     margin-right: 0;
 }
 
+.sidebar-content {
+    min-width: var(--right-sidebar-width);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 /* Handle - Floating Detached */
 .right-handle {
     width: 12px;
@@ -118,8 +125,12 @@
 }
 
 .pad-body::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.15);
     border-radius: 4px;
+}
+
+.pad-body::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .stt-line {

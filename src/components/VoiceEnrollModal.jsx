@@ -17,8 +17,6 @@ export default function VoiceEnrollModal({ open, onClose, onComplete }) {
   const [step, setStep] = useState(1);
   const sentence = useMemo(() => SENTENCES[step - 1], [step]);
 
-  if (!open) return null;
-
   return (
     <ModalShell open={open}>
       <div className="voice-title">학습 데이터 수집({step}/{TOTAL})</div>

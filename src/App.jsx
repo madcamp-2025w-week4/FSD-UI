@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import './App.css';
 import TopToolbar from './components/TopToolbar';
 import LeftSidebar from './components/LeftSidebar';
@@ -22,7 +22,68 @@ function App() {
   const [stage, setStage] = useState('landing'); // landing | app
   const [showConsent, setShowConsent] = useState(false);
   const [showEnroll, setShowEnroll] = useState(false);
-  const [showReady, setShowReady] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessages, setToastMessages] = useState([]);
+  const [toastQueue, setToastQueue] = useState([]);
+  const [toastToken, setToastToken] = useState(0);
+  const toastActiveRef = useRef(false);
+
+  const enqueueToastGroup = (messages, options = {}) => {
+    const normalized = Array.isArray(messages) ? messages.filter(Boolean) : [];
+    if (normalized.length === 0) return;
+    if (options.replace && toastActiveRef.current) {
+      setToastMessages(normalized);
+      setShowToast(true);
+      setToastQueue([]);
+      setToastToken((prev) => prev + 1);
+      return;
+    }
+    if (!toastActiveRef.current) {
+      toastActiveRef.current = true;
+      setToastMessages(normalized);
+      setShowToast(true);
+      setToastToken((prev) => prev + 1);
+      return;
+    }
+    setToastQueue((prev) => [...prev, normalized]);
+  };
+
+  const enqueueToast = (message, options = {}) => enqueueToastGroup([message], options);
+
+  const handleToastDone = () => {
+    setShowToast(false);
+    toastActiveRef.current = false;
+    setToastQueue((prev) => {
+      if (prev.length === 0) return prev;
+      const [next, ...rest] = prev;
+      toastActiveRef.current = true;
+      setToastMessages(next);
+      setShowToast(true);
+      setToastToken((prev) => prev + 1);
+      return rest;
+    });
+  };
+
+  const handleGearChange = (nextGear, options = {}) => {
+    setGear((prev) => {
+      if (prev === nextGear) return prev;
+      const showToast = options.suppressToast !== true;
+      if (nextGear === 'P' && fsdSleep) {
+        setFsdSleep(false);
+        if (showToast) {
+          enqueueToastGroup([
+            `${nextGear}단으로 변속했습니다.`,
+            'FSD 모드가 비활성화되었습니다.'
+          ], { replace: true });
+        }
+        return nextGear;
+      }
+      if (showToast) {
+        enqueueToast(`${nextGear}단으로 변속했습니다.`, { replace: true });
+      }
+      return nextGear;
+    });
+  };
 
   const mode = useMemo(() => {
     if (gear === 'P') return 'note';
@@ -66,8 +127,19 @@ function App() {
           setFsdSleep((prev) => {
             const next = !prev;
             if (next && gear === 'P') {
-              setGear('D');
+              handleGearChange('D', { suppressToast: true });
+              enqueueToastGroup([
+                'D단으로 변속했습니다.',
+                'FSD 모드가 활성화되었습니다.'
+              ], { replace: true });
+              return next;
             }
+            enqueueToast(
+              next
+                ? 'FSD 모드가 활성화되었습니다.'
+                : 'FSD 모드가 비활성화되었습니다.',
+              { replace: true }
+            );
             return next;
           });
         }}
@@ -96,12 +168,14 @@ function App() {
         onClose={() => setShowEnroll(false)}
         onComplete={() => {
           setShowEnroll(false);
-          setShowReady(true);
+          enqueueToast('준비가 완료되었습니다!');
         }}
       />
       <ReadyToast
-        open={showReady}
-        onDone={() => setShowReady(false)}
+        open={showToast}
+        messages={toastMessages}
+        token={toastToken}
+        onDone={handleToastDone}
       />
 
       <FsdSignalStatus enabled={fsdSleep} />
@@ -111,7 +185,7 @@ function App() {
         <StatusPanel
           fsdSleep={fsdSleep}
           gear={gear}
-          onGearChange={setGear}
+          onGearChange={handleGearChange}
         />
       </div>
 

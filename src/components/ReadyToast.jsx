@@ -1,18 +1,22 @@
 import React, { useEffect } from 'react';
 import './ReadyToast.css';
 
-export default function ReadyToast({ open, onDone }) {
+export default function ReadyToast({ open, messages, token, onDone }) {
   useEffect(() => {
-    if (!open) return;
+    if (!open || !messages || messages.length === 0) return;
     const t = setTimeout(() => onDone(), 1600);
     return () => clearTimeout(t);
-  }, [open, onDone]);
+  }, [open, messages, token, onDone]);
 
-  if (!open) return null;
+  if (!open || !messages || messages.length === 0) return null;
 
   return (
-    <div className="ready-toast">
-      준비가 완료되었습니다!
+    <div className="ready-toast-stack" key={token}>
+      {messages.map((message, index) => (
+        <div className="ready-toast-item" key={`${index}-${message}`}>
+          {message}
+        </div>
+      ))}
     </div>
   );
 }
