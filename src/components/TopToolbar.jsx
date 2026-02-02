@@ -5,7 +5,16 @@ import { useRef } from 'react';
 import { usePdf } from '../context/PdfContext.jsx';
 import * as pdfjsLib from 'pdfjs-dist';
 
-export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, onToggleFsd }) {
+export default function TopToolbar({
+    onToggleStatus,
+    statusActive,
+    fsdActive,
+    onToggleFsd,
+    onRequestSummary,
+    onClearTranscript,
+    sttStatus,
+    sttError,
+}) {
     const [expanded, setExpanded] = useState(true);
     const fileInputRef = useRef(null);
     const { setDocument } = usePdf();
@@ -68,15 +77,28 @@ export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, on
                         </button>
 
                         {/* Secondary Buttons */}
-                        <button className="tool-btn">
+                        <button
+                            className="tool-btn"
+                            onClick={() => onClearTranscript?.()}
+                            title="STT 기록 초기화"
+                        >
                             <AudioLines size={14} />
                             <span>STT</span>
                         </button>
-                        <button className="tool-btn">
+                        <button
+                            className="tool-btn"
+                            onClick={() => onRequestSummary?.()}
+                            title="요약 요청"
+                        >
                             <FileText size={14} />
                             <span>요약</span>
                         </button>
-                        <button className="tool-btn">
+                        <button
+                            className="tool-btn"
+                            onClick={() => {
+                                alert('질문 감지는 FSD 모드에서 자동 처리됩니다.');
+                            }}
+                        >
                             <CircleHelp size={14} />
                             <span>질문</span>
                         </button>
@@ -86,12 +108,19 @@ export default function TopToolbar({ onToggleStatus, statusActive, fsdActive, on
             </div>
 
             {/* Collapse Handle */}
-            <div
-                className="toolbar-handle"
-                onClick={() => setExpanded(!expanded)}
-            >
+            <div className="toolbar-handle" onClick={() => setExpanded(!expanded)}>
                 {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
+            {sttError && (
+                <div className="toolbar-error">
+                    {sttError}
+                </div>
+            )}
+            {sttStatus === 'connecting' && (
+                <div className="toolbar-status">
+                    STT 연결 중…
+                </div>
+            )}
         </div>
     );
 }
