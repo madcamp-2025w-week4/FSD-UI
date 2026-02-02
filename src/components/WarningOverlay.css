@@ -4,6 +4,10 @@
   pointer-events: none;
   z-index: 340;
   opacity: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 18px;
 }
 
 .warning-overlay::before {
@@ -33,10 +37,7 @@
 }
 
 .warning-card {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: 22px;
@@ -50,7 +51,7 @@
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   opacity: 1;
-  transform: translate(-50%, -6px) scale(0);
+  transform: translateY(-6px) scale(0);
   animation-fill-mode: both;
 }
 
@@ -163,24 +164,24 @@
 @keyframes ios-pop-in {
   0% {
     opacity: 1;
-    transform: translate(-50%, -8px) scale(0);
+    transform: translateY(-8px) scale(0);
   }
 
   55% {
-    transform: translate(-50%, 0) scale(1.06);
+    transform: translateY(0) scale(1.06);
   }
 
   100% {
-    transform: translate(-50%, 0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes ios-pop-out {
   0% {
-    transform: translate(-50%, 0) scale(1);
+    transform: translateY(0) scale(1);
   }
 
   100% {
-    transform: translate(-50%, 8px) scale(0);
+    transform: translateY(8px) scale(0);
   }
 }
