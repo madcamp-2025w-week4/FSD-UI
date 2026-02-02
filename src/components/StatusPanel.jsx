@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import BrainView from './BrainView';
 import './StatusPanel.css';
 import { Battery, Lock, Sun, Wifi } from 'lucide-react';
 
-export default function StatusPanel({ fsdSleep }) {
-    // Tesla Gear State: P (Park), R (Reverse), N (Neutral), D (Drive)
-    const [gear, setGear] = useState('P');
+export default function StatusPanel({ fsdSleep, gear, onGearChange }) {
     const modeLabel =
         gear === 'P'
             ? '휴식 모드'
@@ -30,7 +28,7 @@ export default function StatusPanel({ fsdSleep }) {
                     <span
                         key={g}
                         className={`gear-item ${gear === g ? 'active' : ''}`}
-                        onClick={() => setGear(g)}
+                        onClick={() => onGearChange(g)}
                     >
                         {g}
                     </span>

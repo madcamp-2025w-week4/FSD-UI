@@ -16,6 +16,7 @@ import FsdSignalStatus from './components/FsdSignalStatus';
 function App() {
   const [statusMode, setStatusMode] = useState(false);
   const [fsdSleep, setFsdSleep] = useState(false);
+  const [gear, setGear] = useState('P');
   const [alertType, setAlertType] = useState(null);
   const [stage, setStage] = useState('landing'); // landing | app
   const [showConsent, setShowConsent] = useState(false);
@@ -42,7 +43,15 @@ function App() {
         onToggleStatus={() => setStatusMode(!statusMode)}
         statusActive={statusMode}
         fsdActive={fsdSleep}
-        onToggleFsd={() => setFsdSleep((prev) => !prev)}
+        onToggleFsd={() => {
+          setFsdSleep((prev) => {
+            const next = !prev;
+            if (next && gear === 'P') {
+              setGear('D');
+            }
+            return next;
+          });
+        }}
       />
 
       <TopRightActions onTrigger={(type) => setAlertType(type)} />
@@ -76,7 +85,11 @@ function App() {
 
       {/* Tesla Status Panel - Full Height (Left) */}
       <div className={`status-panel-shell ${statusMode ? 'open' : 'closed'}`}>
-        <StatusPanel fsdSleep={fsdSleep} />
+        <StatusPanel
+          fsdSleep={fsdSleep}
+          gear={gear}
+          onGearChange={setGear}
+        />
       </div>
 
       {/* Main Area (Right side when Status Active, or Full Screen) */}

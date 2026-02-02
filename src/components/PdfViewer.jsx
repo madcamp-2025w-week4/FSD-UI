@@ -54,10 +54,13 @@ function PdfPage({ pdfDoc, pageNumber }) {
 export default function PdfViewer() {
   const containerRef = useRef(null);
   const rafRef = useRef(0);
+  const scrollIdleRef = useRef(0);
+  const isUserScrollingRef = useRef(false);
   const { pdfDoc, currentPage, pageCount, setCurrentPage } = usePdf();
 
   useEffect(() => {
     if (!pdfDoc || !containerRef.current) return;
+    if (isUserScrollingRef.current) return;
     const target = containerRef.current.querySelector(
       `.pdf-page[data-page="${currentPage}"]`
     );
@@ -82,6 +85,11 @@ export default function PdfViewer() {
       ref={containerRef}
       onScroll={() => {
         if (!containerRef.current || !pdfDoc) return;
+        isUserScrollingRef.current = true;
+        clearTimeout(scrollIdleRef.current);
+        scrollIdleRef.current = setTimeout(() => {
+          isUserScrollingRef.current = false;
+        }, 140);
         cancelAnimationFrame(rafRef.current);
         rafRef.current = requestAnimationFrame(() => {
           const containerRect = containerRef.current.getBoundingClientRect();
