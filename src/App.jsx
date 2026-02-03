@@ -12,6 +12,7 @@ import ConsentModal from './components/ConsentModal';
 import VoiceEnrollModal from './components/VoiceEnrollModal';
 import ReadyToast from './components/ReadyToast';
 import FsdSignalStatus from './components/FsdSignalStatus';
+import SleepDetector from './components/SleepDetector';
 import { useFsdPipeline } from './hooks/useFsdPipeline';
 
 function App() {
@@ -154,6 +155,12 @@ function App() {
       />
 
       <TopRightActions onTrigger={(type) => setAlertType(type)} />
+      <SleepDetector
+        enabled={gear === 'D' && !fsdSleep}
+        onDrowsy={() => {
+          setAlertType((prev) => (prev ? prev : 'sleep'));
+        }}
+      />
       <WarningOverlay
         alertType={alertType}
         onCancel={() => setAlertType(null)}
