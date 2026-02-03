@@ -170,11 +170,25 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
   }, [appendTranscript, pdfTitle, sanitizeTitle]);
 
   const handleAudio = useCallback((payload) => {
+    const size = payload?.byteLength || payload?.size || 'unknown';
+    console.log('[TTS] binary received, bytes:', size);
     const blob = payload instanceof Blob ? payload : new Blob([payload], { type: 'audio/wav' });
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
-    audio.play().finally(() => {
+    audio.muted = false;
+    audio.volume = 1.0;
+    audio.onended = () => {
+      console.log('[TTS] ended');
       URL.revokeObjectURL(url);
+    };
+    audio.onerror = (e) => {
+      console.error('[TTS] audio error', e);
+      URL.revokeObjectURL(url);
+    };
+    audio.play().then(() => {
+      console.log('[TTS] play ok');
+    }).catch((e) => {
+      console.error('[TTS] play error', e);
     });
   }, []);
 
