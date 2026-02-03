@@ -61,7 +61,7 @@ const saveTranscript = (entries) => {
   }
 };
 
-export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig }) {
+export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTitle }) {
   const wsRef = useRef(null);
   const audioCtxRef = useRef(null);
   const processorRef = useRef(null);
@@ -89,21 +89,33 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig }) {
     ffmpegLoadingRef.current = true;
     try {
       const ffmpeg = new FFmpeg();
-      const devBase = '/@fs/root/madcamp04/FSD-UI/node_modules/@ffmpeg/core/dist/umd';
-      const prodBase = '/ffmpeg';
-      const base = import.meta.env.DEV ? devBase : prodBase;
-      const coreURL = new URL(`${base}/ffmpeg-core.js`, window.location.origin).toString();
-      const wasmURL = new URL(`${base}/ffmpeg-core.wasm`, window.location.origin).toString();
-      await ffmpeg.load({ coreURL, wasmURL });
+      // Use ESM core for module worker. /@fs in dev, /ffmpeg in prod.
+      const baseURL = import.meta.env.DEV
+        ? '/@fs/root/madcamp04/FSD-UI/node_modules/@ffmpeg/core/dist/esm'
+        : '/ffmpeg';
+      await ffmpeg.load({
+        coreURL: `${baseURL}/ffmpeg-core.js`,
+        wasmURL: `${baseURL}/ffmpeg-core.wasm`,
+      });
       ffmpegRef.current = ffmpeg;
+      console.log('[ensureFfmpeg] FFmpeg loaded successfully');
       return ffmpeg;
     } catch (e) {
-      console.error('FFmpeg load error', e);
+      console.error('[ensureFfmpeg] FFmpeg load error:', e);
       setError('MP3 변환 준비 실패: ffmpeg-core 로드 오류');
       throw e;
     } finally {
       ffmpegLoadingRef.current = false;
     }
+  }, []);
+
+  const sanitizeTitle = useCallback((title) => {
+    const raw = title || localStorage.getItem('fsd_pdf_title') || 'lecture';
+    return String(raw)
+      .replace(/\.[^.]+$/, '')
+      .replace(/[\\/:*?"<>|]/g, '_')
+      .replace(/\s+/g, '_')
+      .trim() || 'lecture';
   }, []);
 
   const appendTranscript = useCallback((text) => {
@@ -144,17 +156,18 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig }) {
       }
     } else if (message.type === 'summary' && message.text) {
       setSummary(message.text);
+      const prefix = sanitizeTitle(pdfTitle);
       const blob = new Blob([message.text], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `fsd_summary_${new Date().toISOString().slice(0, 19)}.txt`;
+      a.download = `${prefix}_summary_${new Date().toISOString().slice(0, 19)}.txt`;
       a.click();
       URL.revokeObjectURL(url);
     } else if (message.type === 'error' && message.error) {
       setError(message.error);
     }
-  }, [appendTranscript]);
+  }, [appendTranscript, pdfTitle, sanitizeTitle]);
 
   const handleAudio = useCallback((payload) => {
     const blob = payload instanceof Blob ? payload : new Blob([payload], { type: 'audio/wav' });
@@ -280,8 +293,38 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig }) {
 
   const requestSummary = useCallback(() => {
     const fullText = transcriptRef.current.map((t) => t.text).join('\n');
-    sendControl({ type: 'summary', text: fullText });
-  }, [sendControl]);
+    if (!fullText.trim()) {
+      setError('요약할 텍스트가 없습니다.');
+      return;
+    }
+    const ws = wsRef.current;
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      sendControl({ type: 'summary', text: fullText });
+      return;
+    }
+    // P 모드 등 WS 미연결 상태에서는 요약만을 위해 임시 연결
+    const tempWs = new WebSocket(wsUrl);
+    tempWs.onopen = () => {
+      tempWs.send(JSON.stringify({ type: 'summary', text: fullText }));
+    };
+    tempWs.onmessage = (event) => {
+      if (typeof event.data === 'string') {
+        try {
+          const json = JSON.parse(event.data);
+          handleServerText(json);
+          if (json?.type === 'summary' || json?.type === 'error') {
+            tempWs.close();
+          }
+        } catch {
+          // ignore
+        }
+      }
+    };
+    tempWs.onerror = () => {
+      setError('요약 요청 실패: WebSocket error');
+      tempWs.close();
+    };
+  }, [handleServerText, sendControl, wsUrl]);
 
   const clearTranscript = useCallback(() => {
     transcriptRef.current = [];
@@ -291,14 +334,15 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig }) {
 
   const downloadTranscript = useCallback(() => {
     const fullText = transcriptRef.current.map((t) => t.text).join('\n');
+    const prefix = sanitizeTitle(pdfTitle);
     const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `fsd_transcript_${new Date().toISOString().slice(0, 19)}.txt`;
+    a.download = `${prefix}_${new Date().toISOString().slice(0, 19)}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-  }, []);
+  }, [pdfTitle, sanitizeTitle]);
 
   const downloadRecording = useCallback(async () => {
     console.log('[downloadRecording] 시작, chunks:', recordedChunksRef.current.length);
@@ -316,11 +360,12 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig }) {
     console.log('[downloadRecording] mimeType:', mimeType, 'chunks:', recordedChunksRef.current.length);
     const blob = new Blob(recordedChunksRef.current, { type: mimeType });
     console.log('[downloadRecording] blob size:', blob.size);
+    const prefix = sanitizeTitle(pdfTitle);
     if (mimeType === 'audio/mpeg') {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `fsd_recording_${new Date().toISOString().slice(0, 19)}.mp3`;
+      a.download = `${prefix}_${new Date().toISOString().slice(0, 19)}.mp3`;
       a.click();
       URL.revokeObjectURL(url);
       return;
@@ -340,22 +385,15 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig }) {
       const url = URL.createObjectURL(mp3Blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `fsd_recording_${new Date().toISOString().slice(0, 19)}.mp3`;
+      a.download = `${prefix}_${new Date().toISOString().slice(0, 19)}.mp3`;
       a.click();
       URL.revokeObjectURL(url);
       await ffmpeg.deleteFile(inputName);
       await ffmpeg.deleteFile(outputName);
       console.log('[downloadRecording] 다운로드 완료');
     } catch (e) {
-      console.error('MP3 convert error, falling back to webm:', e);
-      // MP3 변환 실패 시 webm으로 폴백 다운로드
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `fsd_recording_${new Date().toISOString().slice(0, 19)}.webm`;
-      a.click();
-      URL.revokeObjectURL(url);
-      console.log('[downloadRecording] MP3 변환 실패, webm으로 대체 다운로드 완료');
+      console.error('MP3 convert error:', e);
+      setError(`MP3 변환 실패: ${e?.message || '다시 시도해주세요.'}`);
     }
   }, [ensureFfmpeg]);
 
