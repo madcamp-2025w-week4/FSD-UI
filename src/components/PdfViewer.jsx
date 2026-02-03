@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './PdfViewer.css';
 import { usePdf } from '../context/PdfContext.jsx';
+import * as pdfjsLib from 'pdfjs-dist';
 
 function PdfPage({ pdfDoc, pageNumber }) {
   const canvasRef = useRef(null);
@@ -56,7 +57,14 @@ export default function PdfViewer() {
   const rafRef = useRef(0);
   const scrollIdleRef = useRef(0);
   const isUserScrollingRef = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
   const { pdfDoc, currentPage, pageCount, setCurrentPage } = usePdf();
+  const { setDocument } = usePdf();
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url
+  ).toString();
 
   useEffect(() => {
     if (!pdfDoc || !containerRef.current) return;
@@ -81,8 +89,23 @@ export default function PdfViewer() {
 
   return (
     <div
-      className="pdf-viewer"
+      className={`pdf-viewer ${isDragging ? 'dragging' : ''}`}
       ref={containerRef}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDragging(true);
+      }}
+      onDragLeave={() => setIsDragging(false)}
+      onDrop={async (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const file = e.dataTransfer.files?.[0];
+        if (!file || file.type !== 'application/pdf') return;
+        const arrayBuffer = await file.arrayBuffer();
+        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        const doc = await loadingTask.promise;
+        setDocument(doc);
+      }}
       onScroll={() => {
         if (!containerRef.current || !pdfDoc) return;
         isUserScrollingRef.current = true;
