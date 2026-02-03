@@ -65,7 +65,9 @@ export default function TopToolbar({
                                 const arrayBuffer = await file.arrayBuffer();
                                 const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
                                 const doc = await loadingTask.promise;
-                                setDocument(doc);
+                                const name = file.name || 'lecture';
+                                const base = name.replace(/\.[^.]+$/, '');
+                                setDocument(doc, base);
                                 e.target.value = '';
                             }}
                         />

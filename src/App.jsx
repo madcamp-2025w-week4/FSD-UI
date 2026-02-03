@@ -14,6 +14,7 @@ import ReadyToast from './components/ReadyToast';
 import FsdSignalStatus from './components/FsdSignalStatus';
 import SleepDetector from './components/SleepDetector';
 import { useFsdPipeline } from './hooks/useFsdPipeline';
+import { usePdf } from './context/PdfContext.jsx';
 
 function App() {
   const [statusMode, setStatusMode] = useState(false);
@@ -28,6 +29,7 @@ function App() {
   const [toastQueue, setToastQueue] = useState([]);
   const [toastToken, setToastToken] = useState(0);
   const toastActiveRef = useRef(false);
+  const { pdfTitle } = usePdf();
 
   const enqueueToastGroup = (messages, options = {}) => {
     const normalized = Array.isArray(messages) ? messages.filter(Boolean) : [];
@@ -104,7 +106,7 @@ function App() {
     clearTranscript,
     downloadTranscript,
     downloadRecording,
-  } = useFsdPipeline({ mode, ttsConfig });
+  } = useFsdPipeline({ mode, ttsConfig, pdfTitle });
 
   if (stage === 'landing') {
     return (
