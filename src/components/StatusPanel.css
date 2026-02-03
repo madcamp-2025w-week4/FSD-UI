@@ -5,7 +5,20 @@
     border-radius: 0;
     display: flex;
     flex-direction: column;
-    padding: 30px;
+    --sp-pad-top: 24px;
+    --sp-pad-x: 20px;
+    --sp-pad-bottom: 18px;
+    --sp-top-font: 16px;
+    --sp-gear-gap: 28px;
+    --sp-gear-inactive: 20px;
+    --sp-gear-active: 64px;
+    --sp-speed-font: 16px;
+    --sp-mode-font: 16px;
+    --sp-brain-min: 240px;
+    --sp-stt-font: 14px;
+    --sp-controls-gap: 18px;
+    --sp-control-size: 52px;
+    padding: var(--sp-pad-top) var(--sp-pad-x) var(--sp-pad-bottom);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
     position: relative;
     overflow: hidden;
@@ -19,9 +32,9 @@
     justify-content: center;
     /* Centered */
     color: #555;
-    font-size: 14px;
+    font-size: var(--sp-top-font);
     font-weight: 600;
-    margin-bottom: 30px;
+    margin-bottom: 16px;
 }
 
 .status-icons-left {
@@ -38,14 +51,14 @@
     /* Centered */
     align-items: baseline;
     /* Align P, R, N, D baselines */
-    gap: 24px;
+    gap: var(--sp-gear-gap);
     font-family: "Gotham", "Segoe UI", sans-serif;
-    margin-bottom: 40px;
+    margin-bottom: 18px;
     padding-left: 0;
 }
 
 .gear-item {
-    font-size: 18px;
+    font-size: var(--sp-gear-inactive);
     color: #bbb;
     /* Lighter inactive */
     font-weight: 500;
@@ -54,7 +67,7 @@
 }
 
 .gear-item.active {
-    font-size: 64px;
+    font-size: var(--sp-gear-active);
     /* Even bigger active gear */
     color: #111;
     font-weight: 400;
@@ -68,11 +81,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 16px;
     padding: 0 10px;
     color: #666;
     font-weight: 600;
-    font-size: 15px;
+    font-size: var(--sp-speed-font);
 }
 
 .battery-info {
@@ -120,8 +133,8 @@
 
 .mode-label {
     position: absolute;
-    top: 20px;
-    font-size: 15px;
+    top: 10px;
+    font-size: var(--sp-mode-font);
     font-weight: 600;
     color: #3a3a3a;
     letter-spacing: 0.2px;
@@ -130,7 +143,7 @@
 .brain-wrapper {
     width: 100%;
     height: 100%;
-    min-height: 300px;
+    min-height: var(--sp-brain-min);
 }
 
 .viz-label {
@@ -145,8 +158,8 @@
 
 .stt-status {
     text-align: center;
-    margin-top: 6px;
-    font-size: 13px;
+    margin-top: 4px;
+    font-size: var(--sp-stt-font);
     font-weight: 600;
     color: #6e6e73;
 }
@@ -155,15 +168,15 @@
 .status-controls {
     display: flex;
     justify-content: center;
-    gap: 50px;
-    margin-top: auto;
-    padding-top: 30px;
-    padding-bottom: 10px;
+    gap: var(--sp-controls-gap);
+    margin-top: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .control-btn {
-    width: 50px;
-    height: 50px;
+    width: var(--sp-control-size);
+    height: var(--sp-control-size);
     border-radius: 50%;
     background-color: #fff;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
@@ -178,4 +191,40 @@
 
 .control-btn:active {
     transform: scale(0.95);
+}
+
+@media (max-height: 900px) {
+    .status-panel-container {
+        --sp-pad-top: 20px;
+        --sp-pad-x: 16px;
+        --sp-pad-bottom: 14px;
+        --sp-top-font: 15px;
+        --sp-gear-gap: 24px;
+        --sp-gear-inactive: 18px;
+        --sp-gear-active: 56px;
+        --sp-speed-font: 15px;
+        --sp-mode-font: 15px;
+        --sp-brain-min: 210px;
+        --sp-stt-font: 13px;
+        --sp-controls-gap: 16px;
+        --sp-control-size: 48px;
+    }
+}
+
+@media (max-height: 780px) {
+    .status-panel-container {
+        --sp-pad-top: 16px;
+        --sp-pad-x: 14px;
+        --sp-pad-bottom: 12px;
+        --sp-top-font: 14px;
+        --sp-gear-gap: 20px;
+        --sp-gear-inactive: 16px;
+        --sp-gear-active: 48px;
+        --sp-speed-font: 14px;
+        --sp-mode-font: 14px;
+        --sp-brain-min: 190px;
+        --sp-stt-font: 12px;
+        --sp-controls-gap: 14px;
+        --sp-control-size: 44px;
+    }
 }

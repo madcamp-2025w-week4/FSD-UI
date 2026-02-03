@@ -3,7 +3,7 @@ import './ModalShell.css';
 
 const EXIT_MS = 680;
 
-export default function ModalShell({ open, children }) {
+export default function ModalShell({ open, children, cardClassName = '' }) {
   const [shouldRender, setShouldRender] = useState(open);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -31,7 +31,7 @@ export default function ModalShell({ open, children }) {
         isExiting ? 'is-exiting' : ''
       }`}
     >
-      <div className="modal-card">{children}</div>
+      <div className={`modal-card ${cardClassName}`.trim()}>{children}</div>
     </div>
   );
 }

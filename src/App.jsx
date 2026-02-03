@@ -9,6 +9,7 @@ import WarningOverlay from './components/WarningOverlay';
 import PdfViewer from './components/PdfViewer';
 import LandingPage from './components/LandingPage';
 import ConsentModal from './components/ConsentModal';
+import NameInputModal from './components/NameInputModal';
 import VoiceEnrollModal from './components/VoiceEnrollModal';
 import ReadyToast from './components/ReadyToast';
 import FsdSignalStatus from './components/FsdSignalStatus';
@@ -23,7 +24,9 @@ function App() {
   const [alertType, setAlertType] = useState(null);
   const [stage, setStage] = useState('landing'); // landing | app
   const [showConsent, setShowConsent] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
   const [showEnroll, setShowEnroll] = useState(false);
+  const [userName, setUserName] = useState(() => localStorage.getItem('fsd_user_name') || '');
   const [showToast, setShowToast] = useState(false);
   const [toastMessages, setToastMessages] = useState([]);
   const [toastQueue, setToastQueue] = useState([]);
@@ -179,6 +182,17 @@ function App() {
         onClose={() => setShowConsent(false)}
         onAgree={() => {
           setShowConsent(false);
+          setShowNameInput(true);
+        }}
+      />
+      <NameInputModal
+        open={showNameInput}
+        initialName={userName}
+        onClose={() => setShowNameInput(false)}
+        onSubmit={(name) => {
+          setUserName(name);
+          localStorage.setItem('fsd_user_name', name);
+          setShowNameInput(false);
           setShowEnroll(true);
         }}
       />

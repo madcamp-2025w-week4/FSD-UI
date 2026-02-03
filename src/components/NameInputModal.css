@@ -1,0 +1,75 @@
+.name-modal-card {
+  width: min(420px, 82vw);
+}
+
+.name-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1c1c1e;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.name-modal-body {
+  font-size: 14px;
+  color: #5a5a5f;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.name-modal-input {
+  width: min(320px, 100%);
+  display: block;
+  margin: 0 auto;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c1c1e;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: none;
+  text-align: center;
+}
+
+.name-modal-input::placeholder {
+  color: #9b9ba0;
+  font-weight: 500;
+}
+
+.name-modal-input:focus {
+  border-color: rgba(0, 122, 255, 0.4);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.name-modal-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.name-modal-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.name-modal-btn.primary {
+  background: #111111;
+  color: white;
+}
+
+.name-modal-btn.primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.name-modal-btn.ghost {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1c1c1e;
+}
