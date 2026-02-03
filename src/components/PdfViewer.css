@@ -9,6 +9,10 @@
   border-radius: 18px;
 }
 
+.pdf-viewer.text-mode {
+  cursor: crosshair;
+}
+
 .pdf-viewer::-webkit-scrollbar {
   width: 4px;
 }
@@ -61,6 +65,117 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
+}
+
+.pdf-annotation-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pdf-annotation-layer.text-mode {
+  pointer-events: auto;
+}
+
+.text-box {
+  position: absolute;
+  border: 1px dashed transparent;
+  background: transparent;
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 0;
+  cursor: move;
+  pointer-events: auto;
+  backdrop-filter: none;
+  box-sizing: border-box;
+}
+
+.text-box.active {
+  border-color: rgba(0, 122, 255, 0.7);
+  background: transparent;
+}
+
+.text-box-content {
+  width: 100%;
+  height: 100%;
+  outline: none;
+  color: #111111;
+  font-weight: 600;
+  padding: 6px;
+  box-sizing: border-box;
+  line-height: 1.2;
+}
+
+.text-box-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.3);
+  cursor: se-resize;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.text-box.active .text-box-resize {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.text-color-menu {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  display: flex;
+  gap: 6px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  align-items: center;
+}
+
+.text-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  padding: 0;
+}
+
+.text-color-dot.selected {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.text-color-divider {
+  width: 1px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 0 2px;
+}
+
+.text-move-btn {
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: #1c1c1e;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.text-move-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 .pdf-page canvas {

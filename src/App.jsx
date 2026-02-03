@@ -29,6 +29,7 @@ function App() {
   const [toastQueue, setToastQueue] = useState([]);
   const [toastToken, setToastToken] = useState(0);
   const toastActiveRef = useRef(false);
+  const [textToolActive, setTextToolActive] = useState(false);
   const { pdfTitle } = usePdf();
 
   const enqueueToastGroup = (messages, options = {}) => {
@@ -128,6 +129,8 @@ function App() {
         onToggleStatus={() => setStatusMode(!statusMode)}
         statusActive={statusMode}
         fsdActive={fsdSleep}
+        textToolActive={textToolActive}
+        onToggleTextTool={() => setTextToolActive((prev) => !prev)}
         onToggleFsd={() => {
           setFsdSleep((prev) => {
             const next = !prev;
@@ -216,7 +219,10 @@ function App() {
 
           {/* Center Content (PDF Preview) */}
           <div className="center-panel">
-            <PdfViewer />
+            <PdfViewer
+              textToolActive={textToolActive}
+              onTextToolUsed={() => setTextToolActive(false)}
+            />
           </div>
 
           <RightSidebar sttLines={sttLines} />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput, Car } from 'lucide-react';
+import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput, Car, Type } from 'lucide-react';
 import './TopToolbar.css';
 import { useRef } from 'react';
 import { usePdf } from '../context/PdfContext.jsx';
@@ -9,6 +9,8 @@ export default function TopToolbar({
     onToggleStatus,
     statusActive,
     fsdActive,
+    textToolActive,
+    onToggleTextTool,
     onToggleFsd,
     onRequestSummary,
     onClearTranscript,
@@ -81,6 +83,14 @@ export default function TopToolbar({
                         </button>
 
                         {/* Secondary Buttons */}
+                        <button
+                            className={`tool-btn ${textToolActive ? 'active-text' : ''}`}
+                            onClick={() => onToggleTextTool?.()}
+                            title="텍스트 상자 추가"
+                        >
+                            <Type size={14} />
+                            <span>텍스트</span>
+                        </button>
                         <button
                             className="tool-btn"
                             onClick={() => onRequestSummary?.()}

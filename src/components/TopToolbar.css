@@ -134,6 +134,11 @@
     box-shadow: 0 6px 18px rgba(0, 122, 255, 0.22);
 }
 
+.tool-btn.active-text {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: #111111;
+}
+
 .tool-btn.active-status:hover {
     background-color: #0063cc;
 }
