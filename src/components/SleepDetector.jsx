@@ -8,6 +8,9 @@ const ABSENT_MS = 5000;
 const ABSENT_COOLDOWN_MS = 8000;
 const CALIBRATION_MS = 2000;
 const EAR_SMOOTHING = 5;
+const MIN_FACE_WIDTH = 0.15;
+const CENTER_WEIGHT = 0.3;
+const SIZE_WEIGHT = 0.7;
 
 const LEFT_EYE = [33, 160, 158, 133, 153, 144];
 const RIGHT_EYE = [263, 387, 385, 362, 380, 373];
@@ -29,6 +32,44 @@ const computeEAR = (landmarks, indices) => {
   const horizontal = distance(p1, p4);
   if (horizontal <= 0) return 0;
   return vertical / (2 * horizontal);
+};
+
+const computeFaceBox = (landmarks) => {
+  let minX = 1;
+  let maxX = 0;
+  let minY = 1;
+  let maxY = 0;
+  for (const p of landmarks) {
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  }
+  const width = Math.max(0, maxX - minX);
+  const height = Math.max(0, maxY - minY);
+  const centerX = (minX + maxX) * 0.5;
+  const centerY = (minY + maxY) * 0.5;
+  return { width, height, centerX, centerY };
+};
+
+const pickPrimaryFace = (faces) => {
+  const candidates = faces
+    .map((face) => {
+      const box = computeFaceBox(face);
+      if (box.width < MIN_FACE_WIDTH) return null;
+      const area = box.width * box.height;
+      const dx = box.centerX - 0.5;
+      const dy = box.centerY - 0.5;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const centerScore = Math.max(0, 1 - dist * 2);
+      const score = area * SIZE_WEIGHT + centerScore * CENTER_WEIGHT;
+      return { face, score };
+    })
+    .filter(Boolean);
+
+  if (candidates.length === 0) return null;
+  candidates.sort((a, b) => b.score - a.score);
+  return candidates[0].face;
 };
 
 export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
@@ -75,7 +116,7 @@ export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
           modelAssetPath: '/models/face_landmarker.task'
         },
         runningMode: 'VIDEO',
-        numFaces: 1,
+        numFaces: 3,
         outputFaceBlendshapes: false
       });
 
@@ -93,7 +134,8 @@ export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
         }
 
         const result = landmarkerRef.current.detectForVideo(video, now);
-        const face = result.faceLandmarks?.[0];
+        const faces = result.faceLandmarks || [];
+        const face = pickPrimaryFace(faces);
         if (!face) {
           closedStartRef.current = null;
           if (!absentStartRef.current) {
