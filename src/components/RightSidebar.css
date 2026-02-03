@@ -87,18 +87,10 @@
 }
 
 .pad-header h2 {
-    font-size: 20px;
+    font-size: 16px;
     margin: 0 0 4px 0;
     color: #1c1c1e;
-    font-weight: 700;
-}
-
-.pad-header .divider {
-    height: 3px;
-    background-color: rgba(0, 0, 0, 0.1);
-    margin-bottom: 12px;
-    width: 40px;
-    border-radius: 10px;
+    font-weight: 600;
 }
 
 .pad-header .subtitle {

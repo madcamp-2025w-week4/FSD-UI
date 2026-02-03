@@ -143,6 +143,14 @@
     text-transform: uppercase;
 }
 
+.stt-status {
+    text-align: center;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6e6e73;
+}
+
 /* Bottom Controls */
 .status-controls {
     display: flex;

@@ -83,14 +83,6 @@ export default function TopToolbar({
                         {/* Secondary Buttons */}
                         <button
                             className="tool-btn"
-                            onClick={() => onClearTranscript?.()}
-                            title="STT 기록 초기화"
-                        >
-                            <AudioLines size={14} />
-                            <span>STT</span>
-                        </button>
-                        <button
-                            className="tool-btn"
                             onClick={() => onRequestSummary?.()}
                             title="요약 요청"
                         >

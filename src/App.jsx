@@ -202,6 +202,8 @@ function App() {
           fsdSleep={fsdSleep}
           gear={gear}
           onGearChange={handleGearChange}
+          sttStatus={sttStatus}
+          onSttAction={clearTranscript}
         />
       </div>
 

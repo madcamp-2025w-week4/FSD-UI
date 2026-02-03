@@ -19,8 +19,6 @@ export default function RightSidebar({ sttLines = [] }) {
                 <div className={`sidebar-content ${expanded ? 'visible' : 'hidden'}`}>
                     <div className="pad-header">
                         <h2>작업</h2>
-                        <div className="divider"></div>
-                        <span className="subtitle">STT</span>
                     </div>
 
                     <div className="pad-body scroll-area">

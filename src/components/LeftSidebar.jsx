@@ -57,7 +57,7 @@ export default function LeftSidebar() {
             <div className={`sidebar-container left ${expanded ? 'expanded' : 'collapsed'}`}>
                 <div className={`sidebar-content ${expanded ? 'visible' : 'hidden'}`}>
                     <div className="sidebar-header">
-                        <span>Lecture PDF</span>
+                        <span>슬라이드</span>
                         <span className="page-count">
                             {pageCount > 0 ? `${currentPage}/${pageCount}` : '0/0'}
                         </span>
