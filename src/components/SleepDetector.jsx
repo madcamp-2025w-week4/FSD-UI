@@ -4,6 +4,8 @@ import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 const DEFAULT_THRESHOLD = 0.22;
 const CLOSED_MS = 2000;
 const COOLDOWN_MS = 5000;
+const ABSENT_MS = 5000;
+const ABSENT_COOLDOWN_MS = 8000;
 const CALIBRATION_MS = 2000;
 const EAR_SMOOTHING = 5;
 
@@ -29,13 +31,15 @@ const computeEAR = (landmarks, indices) => {
   return vertical / (2 * horizontal);
 };
 
-export default function SleepDetector({ enabled = true, onDrowsy }) {
+export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
   const videoRef = useRef(null);
   const landmarkerRef = useRef(null);
   const rafRef = useRef(0);
   const streamRef = useRef(null);
   const closedStartRef = useRef(null);
   const lastTriggerRef = useRef(0);
+  const absentStartRef = useRef(null);
+  const lastAbsentRef = useRef(0);
   const thresholdRef = useRef(DEFAULT_THRESHOLD);
   const calibrationRef = useRef({
     start: 0,
@@ -92,9 +96,18 @@ export default function SleepDetector({ enabled = true, onDrowsy }) {
         const face = result.faceLandmarks?.[0];
         if (!face) {
           closedStartRef.current = null;
+          if (!absentStartRef.current) {
+            absentStartRef.current = now;
+          } else if (now - absentStartRef.current >= ABSENT_MS) {
+            if (now - lastAbsentRef.current > ABSENT_COOLDOWN_MS) {
+              lastAbsentRef.current = now;
+              if (onAbsent) onAbsent();
+            }
+          }
           rafRef.current = requestAnimationFrame(tick);
           return;
         }
+        absentStartRef.current = null;
 
         const leftEar = computeEAR(face, LEFT_EYE);
         const rightEar = computeEAR(face, RIGHT_EYE);

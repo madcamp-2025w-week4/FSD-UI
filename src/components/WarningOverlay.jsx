@@ -19,6 +19,12 @@ const ALERT_COPY = {
     accent: '#f2b400',
     glow: 'rgba(242, 180, 0, 0.38)'
   },
+  away: {
+    title: '자리 비움 감지!',
+    message: '곧 FSD가 자동 실행됩니다.',
+    accent: '#ff3b30',
+    glow: 'rgba(255, 59, 48, 0.38)'
+  },
   rollcall: {
     title: '호명 출석 감지!',
     message: '곧 자동으로 대답합니다.',

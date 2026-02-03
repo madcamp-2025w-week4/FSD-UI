@@ -160,6 +160,9 @@ function App() {
         onDrowsy={() => {
           setAlertType((prev) => (prev ? prev : 'sleep'));
         }}
+        onAbsent={() => {
+          setAlertType((prev) => (prev ? prev : 'away'));
+        }}
       />
       <WarningOverlay
         alertType={alertType}
