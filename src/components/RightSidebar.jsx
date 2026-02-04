@@ -1,9 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './RightSidebar.css';
 
 export default function RightSidebar({ sttLines = [] }) {
     const [expanded, setExpanded] = useState(true);
+    const bodyRef = useRef(null);
+    const shouldAutoScrollRef = useRef(true);
+
+    useEffect(() => {
+        if (!expanded) return;
+        if (!bodyRef.current) return;
+        if (!shouldAutoScrollRef.current) return;
+        bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+    }, [sttLines, expanded]);
+
+    const handleScroll = () => {
+        const el = bodyRef.current;
+        if (!el) return;
+        const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+        shouldAutoScrollRef.current = atBottom;
+    };
 
     return (
         <div className="sidebar-wrapper right">
@@ -21,7 +37,7 @@ export default function RightSidebar({ sttLines = [] }) {
                         <h2>작업</h2>
                     </div>
 
-                    <div className="pad-body scroll-area">
+                    <div className="pad-body scroll-area" ref={bodyRef} onScroll={handleScroll}>
                         {sttLines.length === 0 && (
                             <div className="stt-line past">STT 대기 중…</div>
                         )}
