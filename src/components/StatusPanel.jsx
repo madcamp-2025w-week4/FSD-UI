@@ -93,10 +93,6 @@ export default function StatusPanel({
                 <div className="battery-info">
                     <span>{gear === 'P' ? '0 min' : `${elapsedMin} min`}</span>
                 </div>
-                <div className="speed-limit">
-                    <span>LIMIT</span>
-                    <strong>45</strong>
-                </div>
             </div>
 
             {/* 3D Visualization Area (Car/Brain) */}

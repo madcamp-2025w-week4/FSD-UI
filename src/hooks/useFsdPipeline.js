@@ -419,6 +419,7 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
     }
   }, [ensureFfmpeg]);
 
+  // 연결 관리: P(note) 모드면 끊기, 그 외에는 연결
   useEffect(() => {
     if (mode === 'note') {
       disconnect();
@@ -428,7 +429,24 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
     return () => {
       disconnect();
     };
-  }, [connect, disconnect, mode]);
+  // 의도적으로 mode를 제외: 연결은 note ↔ 비note 전환 시에만 관리
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode === 'note']);
+
+  // 모드 변경 시 서버에 control 메시지 전송 (기존 연결 유지)
+  useEffect(() => {
+    if (mode === 'note') return;
+    // WebSocket이 연결된 상태에서만 모드 업데이트 전송
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      console.log('[useFsdPipeline] Sending mode update:', mode);
+      sendControl({
+        type: 'control',
+        mode: mode === 'defense' ? 'defense' : mode === 'lecture' ? 'lecture' : 'note',
+        tts_ref_audio_path: ttsConfig?.refAudioPath || '',
+        tts_prompt_text: ttsConfig?.promptText || '',
+      });
+    }
+  }, [mode, sendControl, ttsConfig]);
 
   return {
     sttLines,
