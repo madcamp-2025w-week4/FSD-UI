@@ -137,6 +137,7 @@ function TextBox({ box, pageNumber, onUpdate, active, setActive }) {
   const dragRef = useRef(null);
   const resizeRef = useRef(null);
   const contentRef = useRef(null);
+  const isComposingRef = useRef(false);
   const boxRef = useRef(box);
 
   useEffect(() => {
@@ -235,7 +236,7 @@ function TextBox({ box, pageNumber, onUpdate, active, setActive }) {
 
   useEffect(() => {
     if (!contentRef.current) return;
-    if (contentRef.current.textContent !== box.text) {
+    if (!isComposingRef.current && contentRef.current.textContent !== box.text) {
       contentRef.current.textContent = box.text || '';
     }
     if (active) {
@@ -304,7 +305,17 @@ function TextBox({ box, pageNumber, onUpdate, active, setActive }) {
         suppressContentEditableWarning
         onMouseDown={() => setActive(box.id)}
         style={{ color: box.color || '#111111' }}
+        onCompositionStart={() => {
+          isComposingRef.current = true;
+        }}
+        onCompositionEnd={(e) => {
+          isComposingRef.current = false;
+          onUpdate(pageNumber, box.id, {
+            text: e.currentTarget.textContent || ''
+          });
+        }}
         onInput={(e) => {
+          if (isComposingRef.current) return;
           onUpdate(pageNumber, box.id, {
             text: e.currentTarget.textContent || ''
           });

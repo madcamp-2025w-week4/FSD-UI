@@ -205,7 +205,7 @@ export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [enabled, onDrowsy]);
+  }, [enabled, onDrowsy, onAbsent]);
 
   return <video ref={videoRef} muted playsInline style={{ display: 'none' }} />;
 }

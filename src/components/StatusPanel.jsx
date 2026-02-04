@@ -109,13 +109,6 @@ export default function StatusPanel({
             </div>
 
             <div className="stt-status">{sttLabel}</div>
-
-            {/* Bottom Controls / Quick Actions */}
-            <div className="status-controls">
-                <button className="control-btn" onClick={onSttAction} type="button">
-                    <AudioLines size={20} />
-                </button>
-            </div>
         </div>
     );
 }
