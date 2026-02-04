@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput, Car, Type } from 'lucide-react';
+import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput, FileDown, Car, Type } from 'lucide-react';
 import './TopToolbar.css';
 import { useRef } from 'react';
 import { usePdf } from '../context/PdfContext.jsx';
 import * as pdfjsLib from 'pdfjs-dist';
+import { PDFDocument } from 'pdf-lib';
 
 export default function TopToolbar({
     onToggleStatus,
@@ -21,12 +22,111 @@ export default function TopToolbar({
 }) {
     const [expanded, setExpanded] = useState(true);
     const fileInputRef = useRef(null);
-    const { setDocument } = usePdf();
+    const { setDocument, pdfDoc, boxes, pdfTitle } = usePdf();
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
         'pdfjs-dist/build/pdf.worker.min.mjs',
         import.meta.url
     ).toString();
+
+    const wrapText = (ctx, text, maxWidth) => {
+        const lines = [];
+        const paragraphs = String(text || '').split('\n');
+        paragraphs.forEach((paragraph, index) => {
+            let current = '';
+            Array.from(paragraph).forEach((ch) => {
+                const next = current + ch;
+                if (ctx.measureText(next).width > maxWidth && current) {
+                    lines.push(current);
+                    current = ch;
+                } else {
+                    current = next;
+                }
+            });
+            if (current) lines.push(current);
+            if (index < paragraphs.length - 1) lines.push('');
+        });
+        return lines;
+    };
+
+    const textBoxToPng = (text, width, height, fontSize, color) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.ceil(width));
+        canvas.height = Math.max(1, Math.ceil(height));
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = color || '#111111';
+        ctx.textBaseline = 'top';
+        ctx.font = `${fontSize}px Pretendard, "Apple SD Gothic Neo", "Segoe UI", sans-serif`;
+        const lines = wrapText(ctx, text, canvas.width);
+        const lineHeight = fontSize * 1.2;
+        let y = 0;
+        lines.forEach((line) => {
+            if (y + lineHeight <= canvas.height) {
+                ctx.fillText(line, 0, y);
+                y += lineHeight;
+            }
+        });
+        return canvas.toDataURL('image/png');
+    };
+
+    const handleExport = async () => {
+        try {
+            if (!pdfDoc) {
+                alert('먼저 PDF를 불러와주세요.');
+                return;
+            }
+            if (!pdfDoc.getData) {
+                alert('PDF 데이터를 읽을 수 없습니다.');
+                return;
+            }
+            const rawData = await pdfDoc.getData();
+            const dataBuffer = rawData?.slice ? rawData.slice(0) : rawData;
+            if (!dataBuffer) {
+                alert('PDF 데이터를 읽을 수 없습니다.');
+                return;
+            }
+            const pdf = await PDFDocument.load(dataBuffer);
+            const pages = pdf.getPages();
+            for (const [pageKey, list] of Object.entries(boxes || {})) {
+                const pageIndex = Number(pageKey) - 1;
+                const page = pages[pageIndex];
+                if (!page) continue;
+                const { width, height } = page.getSize();
+                for (const box of list) {
+                    const text = box.text?.trim();
+                    if (!text) continue;
+                    const padding = 6;
+                    const boxWidth = Math.max(10, box.w * width);
+                    const boxHeight = Math.max(10, box.h * height);
+                    const innerWidth = Math.max(1, boxWidth - padding * 2);
+                    const innerHeight = Math.max(1, boxHeight - padding * 2);
+                    const fontSize = Math.max(10, innerHeight * 0.7);
+                    const dataUrl = textBoxToPng(text, innerWidth, innerHeight, fontSize, box.color);
+                    const image = await pdf.embedPng(dataUrl);
+                    const x = box.x * width + padding;
+                    const y = height - box.y * height - boxHeight + padding;
+                    page.drawImage(image, {
+                        x,
+                        y,
+                        width: innerWidth,
+                        height: innerHeight
+                    });
+                }
+            }
+            const bytes = await pdf.save();
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${pdfTitle || 'lecture'}-annotated.pdf`;
+            link.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('PDF export failed:', error);
+            alert('내보내기 중 오류가 발생했습니다.');
+        }
+    };
 
     return (
         <div className="toolbar-wrapper">
@@ -65,11 +165,12 @@ export default function TopToolbar({
                                 const file = e.target.files?.[0];
                                 if (!file) return;
                                 const arrayBuffer = await file.arrayBuffer();
-                                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                                const safeBuffer = arrayBuffer.slice(0);
+                                const loadingTask = pdfjsLib.getDocument({ data: safeBuffer });
                                 const doc = await loadingTask.promise;
                                 const name = file.name || 'lecture';
                                 const base = name.replace(/\.[^.]+$/, '');
-                                setDocument(doc, base);
+                                setDocument(doc, base, safeBuffer);
                                 e.target.value = '';
                             }}
                         />
@@ -80,6 +181,13 @@ export default function TopToolbar({
                         >
                             <FileInput size={14} />
                             <span>불러오기</span>
+                        </button>
+                        <button
+                            className="tool-btn"
+                            onClick={handleExport}
+                        >
+                            <FileDown size={14} />
+                            <span>내보내기</span>
                         </button>
 
                         {/* Secondary Buttons */}

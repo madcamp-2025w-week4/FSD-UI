@@ -324,9 +324,7 @@ export default function PdfViewer({ textToolActive = false, onTextToolUsed }) {
   const [activeBoxId, setActiveBoxId] = useState(null);
   const justCreatedRef = useRef(false);
   const pendingFocusIdRef = useRef(null);
-  const { pdfDoc, currentPage, pageCount, setCurrentPage } = usePdf();
-  const { setDocument } = usePdf();
-  const [boxes, setBoxes] = useState({});
+  const { pdfDoc, currentPage, pageCount, setCurrentPage, setDocument, boxes, setBoxes } = usePdf();
 
   pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -476,9 +474,12 @@ export default function PdfViewer({ textToolActive = false, onTextToolUsed }) {
         const file = e.dataTransfer.files?.[0];
         if (!file || file.type !== 'application/pdf') return;
         const arrayBuffer = await file.arrayBuffer();
-        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        const safeBuffer = arrayBuffer.slice(0);
+        const loadingTask = pdfjsLib.getDocument({ data: safeBuffer });
         const doc = await loadingTask.promise;
-        setDocument(doc);
+        const name = file.name || 'lecture';
+        const base = name.replace(/\.[^.]+$/, '');
+        setDocument(doc, base, safeBuffer);
       }}
       onScroll={() => {
         if (!containerRef.current || !pdfDoc) return;

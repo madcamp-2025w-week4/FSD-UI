@@ -5,14 +5,18 @@ const PdfContext = createContext(null);
 export function PdfProvider({ children }) {
   const [pdfDoc, setPdfDoc] = useState(null);
   const [pdfTitle, setPdfTitle] = useState(() => localStorage.getItem('fsd_pdf_title') || '');
+  const [pdfData, setPdfData] = useState(null);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [boxes, setBoxes] = useState({});
 
-  const setDocument = useCallback((doc, title = '') => {
+  const setDocument = useCallback((doc, title = '', data = null) => {
     setPdfDoc(doc);
+    setPdfData(data);
     setPageCount(doc?.numPages || 0);
     setCurrentPage(1);
     setPdfTitle(title);
+    setBoxes({});
     if (title) {
       localStorage.setItem('fsd_pdf_title', title);
     }
@@ -22,12 +26,15 @@ export function PdfProvider({ children }) {
     () => ({
       pdfDoc,
       pdfTitle,
+      pdfData,
       pageCount,
       currentPage,
       setCurrentPage,
-      setDocument
+      setDocument,
+      boxes,
+      setBoxes
     }),
-    [pdfDoc, pdfTitle, pageCount, currentPage, setCurrentPage, setDocument]
+    [pdfDoc, pdfTitle, pdfData, pageCount, currentPage, setCurrentPage, setDocument, boxes, setBoxes]
   );
 
   return <PdfContext.Provider value={value}>{children}</PdfContext.Provider>;
