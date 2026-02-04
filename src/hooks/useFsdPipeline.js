@@ -4,6 +4,7 @@ import { fetchFile } from '@ffmpeg/util';
 
 const DEFAULT_WS_URL = import.meta.env.VITE_FSD_WS_URL || 'ws://127.0.0.1:9000/ws/audio';
 const TRANSCRIPT_KEY = 'fsd_transcript_v1';
+const STT_MAX_LINES = 500;
 
 const nowTs = () => Date.now();
 
@@ -43,7 +44,7 @@ const floatTo16BitPCM = (float32) => {
 
 const loadTranscript = () => {
   try {
-    const raw = localStorage.getItem(TRANSCRIPT_KEY);
+    const raw = sessionStorage.getItem(TRANSCRIPT_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) return parsed;
@@ -55,7 +56,7 @@ const loadTranscript = () => {
 
 const saveTranscript = (entries) => {
   try {
-    localStorage.setItem(TRANSCRIPT_KEY, JSON.stringify(entries));
+    sessionStorage.setItem(TRANSCRIPT_KEY, JSON.stringify(entries));
   } catch {
     // ignore storage overflow
   }
@@ -73,7 +74,7 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
   const transcriptRef = useRef(loadTranscript());
   const pendingRef = useRef('');
   const flushTimerRef = useRef(null);
-  const [sttLines, setSttLines] = useState(() => transcriptRef.current.slice(-10));
+  const [sttLines, setSttLines] = useState(() => transcriptRef.current.slice(-STT_MAX_LINES));
   const [summary, setSummary] = useState('');
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
@@ -121,8 +122,11 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
   const appendTranscript = useCallback((text) => {
     const entry = { ts: nowTs(), text };
     transcriptRef.current = [...transcriptRef.current, entry];
+    if (transcriptRef.current.length > STT_MAX_LINES) {
+      transcriptRef.current = transcriptRef.current.slice(-STT_MAX_LINES);
+    }
     saveTranscript(transcriptRef.current);
-    setSttLines(transcriptRef.current.slice(-10));
+    setSttLines(transcriptRef.current);
   }, []);
 
   const flushPending = useCallback(() => {
@@ -348,6 +352,10 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
 
   const downloadTranscript = useCallback(() => {
     const fullText = transcriptRef.current.map((t) => t.text).join('\n');
+    if (!fullText.trim()) {
+      setError('저장할 텍스트가 없습니다.');
+      return;
+    }
     const prefix = sanitizeTitle(pdfTitle);
     const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
