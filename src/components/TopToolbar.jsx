@@ -52,20 +52,23 @@ export default function TopToolbar({
 
     const EXPORT_FONT_FAMILY = '"Pretendard", "Apple SD Gothic Neo", "Segoe UI", sans-serif';
 
-    const textBoxToPng = (text, width, height, fontSize, color) => {
+    const textBoxToPng = (text, width, height, fontSize, color, pixelRatio = 2) => {
         const canvas = document.createElement('canvas');
-        canvas.width = Math.max(1, Math.ceil(width));
-        canvas.height = Math.max(1, Math.ceil(height));
+        const w = Math.max(1, Math.ceil(width));
+        const h = Math.max(1, Math.ceil(height));
+        canvas.width = w * pixelRatio;
+        canvas.height = h * pixelRatio;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.scale(pixelRatio, pixelRatio);
         ctx.fillStyle = color || '#111111';
         ctx.textBaseline = 'top';
         ctx.font = `600 ${fontSize}px ${EXPORT_FONT_FAMILY}`;
-        const lines = wrapText(ctx, text, canvas.width);
+        const lines = wrapText(ctx, text, w);
         const lineHeight = fontSize * 1.2;
         let y = 0;
         lines.forEach((line) => {
-            if (y + lineHeight <= canvas.height) {
+            if (y + lineHeight <= h) {
                 ctx.fillText(line, 0, y);
                 y += lineHeight;
             }
@@ -115,7 +118,7 @@ export default function TopToolbar({
                     // Match UI sizing: fontSize ~= box.h * 100px, but keep within box height.
                     const uiFontSize = Math.floor(box.h * 100);
                     const fontSize = Math.max(10, Math.min(innerHeight * 0.9, uiFontSize));
-                    const dataUrl = textBoxToPng(text, innerWidth, innerHeight, fontSize, box.color);
+                    const dataUrl = textBoxToPng(text, innerWidth, innerHeight, fontSize, box.color, 3);
                     const image = await pdf.embedPng(dataUrl);
                     const x = (box.x * renderWidth + padding) * scaleX;
                     const y = height - (box.y * renderHeight + boxHeightPx - padding) * scaleY;
