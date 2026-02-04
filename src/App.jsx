@@ -33,6 +33,7 @@ function App() {
   const [toastToken, setToastToken] = useState(0);
   const toastActiveRef = useRef(false);
   const [textToolActive, setTextToolActive] = useState(false);
+  const [signalState, setSignalState] = useState('green');
   const { pdfTitle, clearDocument } = usePdf();
 
   const enqueueToastGroup = (messages, options = {}) => {
@@ -110,7 +111,20 @@ function App() {
     clearTranscript,
     downloadTranscript,
     downloadRecording,
-  } = useFsdPipeline({ mode, ttsConfig, pdfTitle });
+  } = useFsdPipeline({
+    mode,
+    ttsConfig,
+    pdfTitle,
+    onAttendanceStart: () => {
+      setAlertType((prev) => (prev ? prev : 'checkin'));
+    },
+    onRollcallName: () => {
+      setAlertType((prev) => (prev ? prev : 'rollcall'));
+    },
+    onAudioEnded: () => {
+      setSignalState('green');
+    }
+  });
 
   if (stage === 'landing') {
     return (
@@ -187,6 +201,15 @@ function App() {
           if ((type === 'sleep' || type === 'away') && gear === 'D' && !fsdSleep) {
             setFsdSleep(true);
             enqueueToast('FSD 모드가 활성화되었습니다.');
+            return;
+          }
+          if (type === 'checkin') {
+            setSignalState('yellow');
+            return;
+          }
+          if (type === 'rollcall') {
+            setSignalState('red');
+            return;
           }
         }}
       />
@@ -224,7 +247,7 @@ function App() {
         onDone={handleToastDone}
       />
 
-      <FsdSignalStatus enabled={fsdSleep} />
+      <FsdSignalStatus enabled={fsdSleep} state={signalState} />
 
       {/* Tesla Status Panel - Full Height (Left) */}
       <div className={`status-panel-shell ${statusMode ? 'open' : 'closed'}`}>

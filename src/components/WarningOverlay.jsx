@@ -2,7 +2,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './WarningOverlay.css';
 import { TriangleAlert } from 'lucide-react';
 
-const DURATION_MS = 3000;
+const DEFAULT_DURATION_MS = 3000;
+const ALERT_DURATION = {
+  rollcall: 1000
+};
 const EXIT_MS = 1200;
 const TIMER_PATH_LENGTH = 100;
 
@@ -51,6 +54,10 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
   const [isExiting, setIsExiting] = useState(false);
   const lastTypeRef = useRef(null);
 
+  const durationMs = useMemo(
+    () => ALERT_DURATION[alertType] ?? DEFAULT_DURATION_MS,
+    [alertType]
+  );
   const copy = useMemo(() => ALERT_COPY[alertType], [alertType]);
 
   const startExit = (callback) => {
@@ -73,7 +80,7 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
     setIsExiting(false);
     exitStartedRef.current = false;
     setProgress(0);
-    setTimeLeft(3);
+    setTimeLeft(Math.ceil(durationMs / 1000));
     clearTimeout(exitTimerRef.current);
     clearTimeout(completeTimerRef.current);
     cancelAnimationFrame(rafRef.current);
@@ -81,12 +88,12 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
 
     const tick = (now) => {
       const elapsed = now - startRef.current;
-      const clamped = Math.min(elapsed, DURATION_MS);
-      const nextProgress = clamped / DURATION_MS;
-      const remaining = Math.max(0, DURATION_MS - clamped);
+      const clamped = Math.min(elapsed, durationMs);
+      const nextProgress = clamped / durationMs;
+      const remaining = Math.max(0, durationMs - clamped);
       setProgress(nextProgress);
       setTimeLeft(Math.max(0, Math.ceil(remaining / 1000)));
-      if (elapsed < DURATION_MS) {
+      if (elapsed < durationMs) {
         rafRef.current = requestAnimationFrame(tick);
       } else if (!exitStartedRef.current) {
         startExit(() => {
@@ -100,13 +107,13 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
       startExit(() => {
         if (onComplete) onComplete(alertType);
       });
-    }, DURATION_MS + 50);
+    }, durationMs + 50);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       clearTimeout(completeTimerRef.current);
     };
-  }, [alertType, onComplete]);
+  }, [alertType, durationMs, onComplete]);
 
   useEffect(() => {
     if (alertType) return;

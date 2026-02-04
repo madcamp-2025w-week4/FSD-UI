@@ -62,7 +62,15 @@ const saveTranscript = (entries) => {
   }
 };
 
-export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTitle }) {
+export function useFsdPipeline({
+  mode,
+  wsUrl = DEFAULT_WS_URL,
+  ttsConfig,
+  pdfTitle,
+  onAttendanceStart,
+  onRollcallName,
+  onAudioEnded
+}) {
   const wsRef = useRef(null);
   const audioCtxRef = useRef(null);
   const processorRef = useRef(null);
@@ -78,6 +86,8 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
   const [summary, setSummary] = useState('');
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  const lastAttendanceRef = useRef(0);
+  const lastRollcallRef = useRef(0);
 
   const ensureFfmpeg = useCallback(async () => {
     if (ffmpegRef.current) return ffmpegRef.current;
@@ -153,6 +163,16 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
       pendingRef.current = combined;
       scheduleFlush();
 
+      const now = nowTs();
+      if (fragment.includes('출석') && now - lastAttendanceRef.current > 2000) {
+        lastAttendanceRef.current = now;
+        onAttendanceStart?.(fragment);
+      }
+      if (fragment.includes('이상범') && now - lastRollcallRef.current > 2000) {
+        lastRollcallRef.current = now;
+        onRollcallName?.(fragment);
+      }
+
       const endsWithPunc = /[.?!。？！…]$/.test(fragment);
       const longEnough = combined.length >= 60;
       if (endsWithPunc || longEnough) {
@@ -171,7 +191,7 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
     } else if (message.type === 'error' && message.error) {
       setError(message.error);
     }
-  }, [appendTranscript, pdfTitle, sanitizeTitle]);
+  }, [appendTranscript, onAttendanceStart, onRollcallName, pdfTitle, sanitizeTitle]);
 
   const handleAudio = useCallback((payload) => {
     const size = payload?.byteLength || payload?.size || 'unknown';
@@ -184,6 +204,7 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
     audio.onended = () => {
       console.log('[TTS] ended');
       URL.revokeObjectURL(url);
+      onAudioEnded?.();
     };
     audio.onerror = (e) => {
       console.error('[TTS] audio error', e);
@@ -194,7 +215,7 @@ export function useFsdPipeline({ mode, wsUrl = DEFAULT_WS_URL, ttsConfig, pdfTit
     }).catch((e) => {
       console.error('[TTS] play error', e);
     });
-  }, []);
+  }, [onAudioEnded]);
 
   const startAudio = useCallback(async () => {
     if (audioCtxRef.current) return;

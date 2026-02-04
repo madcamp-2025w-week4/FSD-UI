@@ -1,14 +1,13 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import './FsdSignalStatus.css';
 
 const STATE_COPY = {
-  red: '출석 중...',
+  red: '출석 대답중...',
   yellow: '출석 대기중...',
   green: '수업 진행중...'
 };
 
-export default function FsdSignalStatus({ enabled }) {
-  const [state] = useState('green');
+export default function FsdSignalStatus({ enabled, state = 'green' }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const statusText = useMemo(() => STATE_COPY[state], [state]);
