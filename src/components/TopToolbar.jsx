@@ -23,7 +23,7 @@ export default function TopToolbar({
 }) {
     const [expanded, setExpanded] = useState(true);
     const fileInputRef = useRef(null);
-    const { setDocument, pdfDoc, boxes, pdfTitle } = usePdf();
+    const { setDocument, pdfDoc, boxes, pdfTitle, pageSizes } = usePdf();
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
         'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -50,6 +50,8 @@ export default function TopToolbar({
         return lines;
     };
 
+    const EXPORT_FONT_FAMILY = '"Pretendard", "Apple SD Gothic Neo", "Segoe UI", sans-serif';
+
     const textBoxToPng = (text, width, height, fontSize, color) => {
         const canvas = document.createElement('canvas');
         canvas.width = Math.max(1, Math.ceil(width));
@@ -58,7 +60,7 @@ export default function TopToolbar({
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = color || '#111111';
         ctx.textBaseline = 'top';
-        ctx.font = `${fontSize}px Pretendard, "Apple SD Gothic Neo", "Segoe UI", sans-serif`;
+        ctx.font = `600 ${fontSize}px ${EXPORT_FONT_FAMILY}`;
         const lines = wrapText(ctx, text, canvas.width);
         const lineHeight = fontSize * 1.2;
         let y = 0;
@@ -77,6 +79,9 @@ export default function TopToolbar({
                 alert('먼저 PDF를 불러와주세요.');
                 return;
             }
+            if (document.fonts?.ready) {
+                await document.fonts.ready;
+            }
             if (!pdfDoc.getData) {
                 alert('PDF 데이터를 읽을 수 없습니다.');
                 return;
@@ -94,24 +99,31 @@ export default function TopToolbar({
                 const page = pages[pageIndex];
                 if (!page) continue;
                 const { width, height } = page.getSize();
+                const renderSize = pageSizes?.[Number(pageKey)];
+                const renderWidth = renderSize?.width || width;
+                const renderHeight = renderSize?.height || height;
+                const scaleX = width / renderWidth;
+                const scaleY = height / renderHeight;
                 for (const box of list) {
                     const text = box.text?.trim();
                     if (!text) continue;
                     const padding = 6;
-                    const boxWidth = Math.max(10, box.w * width);
-                    const boxHeight = Math.max(10, box.h * height);
-                    const innerWidth = Math.max(1, boxWidth - padding * 2);
-                    const innerHeight = Math.max(1, boxHeight - padding * 2);
-                    const fontSize = Math.max(10, innerHeight * 0.7);
+                    const boxWidthPx = Math.max(10, box.w * renderWidth);
+                    const boxHeightPx = Math.max(10, box.h * renderHeight);
+                    const innerWidth = Math.max(1, boxWidthPx - padding * 2);
+                    const innerHeight = Math.max(1, boxHeightPx - padding * 2);
+                    // Match UI sizing: fontSize ~= box.h * 100px, but keep within box height.
+                    const uiFontSize = Math.floor(box.h * 100);
+                    const fontSize = Math.max(10, Math.min(innerHeight * 0.9, uiFontSize));
                     const dataUrl = textBoxToPng(text, innerWidth, innerHeight, fontSize, box.color);
                     const image = await pdf.embedPng(dataUrl);
-                    const x = box.x * width + padding;
-                    const y = height - box.y * height - boxHeight + padding;
+                    const x = (box.x * renderWidth + padding) * scaleX;
+                    const y = height - (box.y * renderHeight + boxHeightPx - padding) * scaleY;
                     page.drawImage(image, {
                         x,
                         y,
-                        width: innerWidth,
-                        height: innerHeight
+                        width: innerWidth * scaleX,
+                        height: innerHeight * scaleY
                     });
                 }
             }

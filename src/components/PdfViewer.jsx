@@ -9,6 +9,7 @@ function PdfPage({
   annotations,
   onAddBox,
   onUpdateBox,
+  onUpdatePageSize,
   textToolActive,
   activeBoxId,
   setActiveBoxId,
@@ -17,9 +18,13 @@ function PdfPage({
 }) {
   const canvasRef = useRef(null);
   const wrapperRef = useRef(null);
+  const contentRef = useRef(null);
+  const innerRef = useRef(null);
   const cancelRenderRef = useRef(null);
   const renderTaskRef = useRef(null);
   const renderPendingRef = useRef(false);
+  const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
+  const [contentScale, setContentScale] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,11 +51,15 @@ function PdfPage({
         availableWidth / baseViewport.width,
         availableHeight / baseViewport.height
       );
-      const viewport = page.getViewport({ scale });
+      const viewport = page.getViewport({ scale: 1 });
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       canvas.width = viewport.width;
       canvas.height = viewport.height;
+      const size = { width: viewport.width, height: viewport.height };
+      setContentSize(size);
+      setContentScale(scale);
+      onUpdatePageSize?.(pageNumber, size);
       renderTaskRef.current = page.render({ canvasContext: ctx, viewport });
       try {
         await renderTaskRef.current.promise;
@@ -100,34 +109,53 @@ function PdfPage({
         onClearSelection?.();
       }}
     >
-      <canvas ref={canvasRef} />
       <div
-        className={`pdf-annotation-layer ${textToolActive ? 'text-mode' : ''}`}
-        onMouseDown={(e) => {
-          if (!textToolActive) return;
-          if (e.target.closest('.text-box')) return;
-          const bounds = wrapperRef.current.getBoundingClientRect();
-          const x = (e.clientX - bounds.left) / bounds.width;
-          const y = (e.clientY - bounds.top) / bounds.height;
-          onAddBox(pageNumber, x, y);
-          onTextToolUsed?.();
-        }}
-        onClick={(e) => {
-          if (textToolActive) return;
-          if (e.target.closest('.text-box')) return;
-          setActiveBoxId(null);
+        className="pdf-page-content"
+        ref={contentRef}
+        style={{
+          width: contentSize.width * contentScale || undefined,
+          height: contentSize.height * contentScale || undefined
         }}
       >
-        {annotations.map((box) => (
-          <TextBox
-            key={box.id}
-            box={box}
-            pageNumber={pageNumber}
-            onUpdate={onUpdateBox}
-            active={activeBoxId === box.id}
-            setActive={setActiveBoxId}
-          />
-        ))}
+        <div
+          className="pdf-page-inner"
+          ref={innerRef}
+          style={{
+            width: contentSize.width || undefined,
+            height: contentSize.height || undefined,
+            transform: `scale(${contentScale})`
+          }}
+        >
+          <canvas ref={canvasRef} />
+          <div
+            className={`pdf-annotation-layer ${textToolActive ? 'text-mode' : ''}`}
+            onMouseDown={(e) => {
+              if (!textToolActive) return;
+              if (e.target.closest('.text-box')) return;
+              const bounds = contentRef.current.getBoundingClientRect();
+              const x = (e.clientX - bounds.left) / bounds.width;
+              const y = (e.clientY - bounds.top) / bounds.height;
+              onAddBox(pageNumber, x, y);
+              onTextToolUsed?.();
+            }}
+            onClick={(e) => {
+              if (textToolActive) return;
+              if (e.target.closest('.text-box')) return;
+              setActiveBoxId(null);
+            }}
+          >
+            {annotations.map((box) => (
+              <TextBox
+                key={box.id}
+                box={box}
+                pageNumber={pageNumber}
+                onUpdate={onUpdateBox}
+                active={activeBoxId === box.id}
+                setActive={setActiveBoxId}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -151,7 +179,7 @@ function TextBox({ box, pageNumber, onUpdate, active, setActive }) {
       const dy = (e.clientY - startY) / bounds.height;
       dragRef.current.lastX = e.clientX;
       dragRef.current.lastY = e.clientY;
-      const pages = Array.from(document.querySelectorAll('.pdf-page'));
+      const pages = Array.from(document.querySelectorAll('.pdf-page-content'));
       dragRef.current.hoverPage = pages.some((page) => {
         const rect = page.getBoundingClientRect();
         return e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
@@ -193,7 +221,7 @@ function TextBox({ box, pageNumber, onUpdate, active, setActive }) {
     e.preventDefault();
     e.stopPropagation();
     setActive(box.id);
-    const bounds = e.currentTarget.parentElement.getBoundingClientRect();
+    const bounds = e.currentTarget.closest('.pdf-page-content').getBoundingClientRect();
     const boxLeftPx = bounds.left + box.x * bounds.width;
     const boxTopPx = bounds.top + box.y * bounds.height;
     dragRef.current = {
@@ -216,7 +244,7 @@ function TextBox({ box, pageNumber, onUpdate, active, setActive }) {
     e.preventDefault();
     e.stopPropagation();
     setActive(box.id);
-    const bounds = e.currentTarget.closest('.pdf-page').getBoundingClientRect();
+    const bounds = e.currentTarget.closest('.pdf-page-content').getBoundingClientRect();
     const startLeftPx = box.x * bounds.width;
     const startTopPx = box.y * bounds.height;
     const handleX = bounds.left + startLeftPx + box.w * bounds.width;
@@ -335,7 +363,7 @@ export default function PdfViewer({ textToolActive = false, onTextToolUsed }) {
   const [activeBoxId, setActiveBoxId] = useState(null);
   const justCreatedRef = useRef(false);
   const pendingFocusIdRef = useRef(null);
-  const { pdfDoc, currentPage, pageCount, setCurrentPage, setDocument, boxes, setBoxes } = usePdf();
+  const { pdfDoc, currentPage, pageCount, setCurrentPage, setDocument, boxes, setBoxes, setPageSize } = usePdf();
 
   pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -534,6 +562,7 @@ export default function PdfViewer({ textToolActive = false, onTextToolUsed }) {
               annotations={pageBoxes[i + 1] || []}
               onAddBox={addBox}
               onUpdateBox={updateBox}
+              onUpdatePageSize={setPageSize}
               textToolActive={textToolActive}
               activeBoxId={activeBoxId}
               setActiveBoxId={setActiveBoxId}

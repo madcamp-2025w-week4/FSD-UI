@@ -66,6 +66,22 @@
   justify-content: center;
   overflow: hidden;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-page-content {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.pdf-page-inner {
+  position: relative;
+  transform-origin: top left;
 }
 
 .pdf-annotation-layer {
@@ -102,6 +118,7 @@
   outline: none;
   color: #111111;
   font-weight: 600;
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
   padding: 6px;
   box-sizing: border-box;
   line-height: 1.2;
