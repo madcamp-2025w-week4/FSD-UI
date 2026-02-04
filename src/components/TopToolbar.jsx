@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput, FileDown, Car, Type } from 'lucide-react';
+import { ChevronUp, ChevronDown, Activity, AudioLines, FileText, CircleHelp, FileInput, FileDown, Car, Type, RotateCcw } from 'lucide-react';
 import './TopToolbar.css';
 import { useRef } from 'react';
 import { usePdf } from '../context/PdfContext.jsx';
@@ -17,6 +17,7 @@ export default function TopToolbar({
     onClearTranscript,
     onDownloadTranscript,
     onDownloadRecording,
+    onNewLecture,
     sttStatus,
     sttError,
 }) {
@@ -175,6 +176,14 @@ export default function TopToolbar({
                             }}
                         />
 
+                        <button
+                            className="tool-btn"
+                            onClick={() => onNewLecture?.()}
+                            title="새 강의 시작"
+                        >
+                            <RotateCcw size={14} />
+                            <span>새 강의</span>
+                        </button>
                         <button
                             className="tool-btn"
                             onClick={() => fileInputRef.current?.click()}

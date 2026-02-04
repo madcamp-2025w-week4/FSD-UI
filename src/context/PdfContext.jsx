@@ -22,6 +22,16 @@ export function PdfProvider({ children }) {
     }
   }, []);
 
+  const clearDocument = useCallback(() => {
+    setPdfDoc(null);
+    setPdfData(null);
+    setPageCount(0);
+    setCurrentPage(1);
+    setPdfTitle('');
+    setBoxes({});
+    localStorage.removeItem('fsd_pdf_title');
+  }, []);
+
   const value = useMemo(
     () => ({
       pdfDoc,
@@ -31,10 +41,22 @@ export function PdfProvider({ children }) {
       currentPage,
       setCurrentPage,
       setDocument,
+      clearDocument,
       boxes,
       setBoxes
     }),
-    [pdfDoc, pdfTitle, pdfData, pageCount, currentPage, setCurrentPage, setDocument, boxes, setBoxes]
+    [
+      pdfDoc,
+      pdfTitle,
+      pdfData,
+      pageCount,
+      currentPage,
+      setCurrentPage,
+      setDocument,
+      clearDocument,
+      boxes,
+      setBoxes
+    ]
   );
 
   return <PdfContext.Provider value={value}>{children}</PdfContext.Provider>;

@@ -33,7 +33,7 @@ function App() {
   const [toastToken, setToastToken] = useState(0);
   const toastActiveRef = useRef(false);
   const [textToolActive, setTextToolActive] = useState(false);
-  const { pdfTitle } = usePdf();
+  const { pdfTitle, clearDocument } = usePdf();
 
   const enqueueToastGroup = (messages, options = {}) => {
     const normalized = Array.isArray(messages) ? messages.filter(Boolean) : [];
@@ -158,6 +158,13 @@ function App() {
         onClearTranscript={clearTranscript}
         onDownloadTranscript={downloadTranscript}
         onDownloadRecording={downloadRecording}
+        onNewLecture={() => {
+          clearTranscript();
+          clearDocument();
+          setFsdSleep(false);
+          handleGearChange('P', { suppressToast: true });
+          enqueueToast('새 강의를 시작합니다.', { replace: true });
+        }}
         sttStatus={sttStatus}
         sttError={sttError}
       />
