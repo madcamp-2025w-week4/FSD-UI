@@ -18,7 +18,7 @@ export default function RightSidebar({ sttLines = [] }) {
             <div className={`sidebar-container right ${expanded ? 'expanded' : 'collapsed'}`}>
                 <div className={`sidebar-content ${expanded ? 'visible' : 'hidden'}`}>
                     <div className="pad-header">
-                        <h2>작업</h2>
+                        <h2>강의 내용</h2>
                     </div>
 
                     <div className="pad-body scroll-area">

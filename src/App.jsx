@@ -175,7 +175,13 @@ function App() {
       <WarningOverlay
         alertType={alertType}
         onCancel={() => setAlertType(null)}
-        onComplete={() => setAlertType(null)}
+        onComplete={(type) => {
+          setAlertType(null);
+          if ((type === 'sleep' || type === 'away') && gear === 'D' && !fsdSleep) {
+            setFsdSleep(true);
+            enqueueToast('FSD 모드가 활성화되었습니다.');
+          }
+        }}
       />
       <ConsentModal
         open={showConsent}
