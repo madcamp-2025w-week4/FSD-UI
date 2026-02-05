@@ -1,4 +1,4 @@
-# 🎓 FSD - Full Self-Driving for Studying
+# 🎓 FSD - Full Self Defense
 
 > 수업 중 졸아도, 자리를 비워도 걱정 NO!  
 > AI가 대신 수업을 듣고, 출석도 대답해주는 출석도 대답해주는 당신의 학점 지키미!
@@ -9,7 +9,7 @@
 
 > "교수님: 이상범?" → AI(이상범): "**네!**"
 
-**FSD (Full Self-Driving for Studying)** 는 강의 중 학생의 상태(졸음, 자리비움)를 실시간으로 감지하고, 호명 출석에 자동으로 대답하며, 수업 내용을 STT로 기록하고 AI로 요약해주는 **올인원 스마트 학습 보조 시스템**입니다.
+**FSD (Full Self Defense)** 는 강의 중 학생의 상태(졸음, 자리비움)를 실시간으로 감지하고, 호명 출석에 자동으로 대답하며, 수업 내용을 STT로 기록하고 AI로 요약해주는 **올인원 스마트 학습 보조 시스템**입니다.
 
 ### 🎯 기획 의도
 
@@ -181,17 +181,3 @@ export CD_TTS_PROMPT_TEXT="참조 음성 텍스트"
 | --- | --- |
 | **이상범** | Full-stack Development |
 
----
-
-## 📌 Future Improvements
-
-- [ ] 다중 사용자 이름 등록 기능
-- [ ] 전자 출석 자동화 (화면 클릭)
-- [ ] PDF 강의 자료 연동 및 하이라이트
-- [ ] 모바일 앱 버전 개발
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
