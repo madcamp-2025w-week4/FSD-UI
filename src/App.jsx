@@ -4,7 +4,6 @@ import TopToolbar from './components/TopToolbar';
 import LeftSidebar from './components/LeftSidebar';
 import RightSidebar from './components/RightSidebar';
 import StatusPanel from './components/StatusPanel';
-import TopRightActions from './components/TopRightActions';
 import WarningOverlay from './components/WarningOverlay';
 import PdfViewer from './components/PdfViewer';
 import LandingPage from './components/LandingPage';
@@ -113,18 +112,26 @@ function App() {
     downloadRecording,
   } = useFsdPipeline({
     mode,
+    fsdActive: fsdSleep,
+    attendanceMode: signalState === 'yellow',  // 노란색일 때만 호명 감지
     ttsConfig,
     pdfTitle,
     onAttendanceStart: () => {
-      if (mode !== 'defense') return;
       setAlertType((prev) => (prev ? prev : 'checkin'));
+      setSignalState('yellow');  // 출석 시작 시 즉시 노란색
     },
     onRollcallName: () => {
-      if (mode !== 'defense') return;
       setAlertType((prev) => (prev ? prev : 'rollcall'));
+      setSignalState('red');  // 호명 감지 시 즉시 빨간색
     },
     onAudioEnded: () => {
-      setSignalState('green');
+      // 음성 끝나고 1초 후 초록불 전환
+      setTimeout(() => setSignalState('green'), 1000);
+    },
+    onAttendanceComplete: () => {
+      console.log('[App] Attendance complete, setting signal to green after 1s');
+      // 출석 완료 후 1초 후 초록불 전환
+      setTimeout(() => setSignalState('green'), 1000);
     }
   });
 
@@ -185,7 +192,6 @@ function App() {
         sttError={sttError}
       />
 
-      <TopRightActions onTrigger={(type) => setAlertType(type)} />
       <SleepDetector
         enabled={gear === 'D' && !fsdSleep}
         onDrowsy={() => {
@@ -206,11 +212,11 @@ function App() {
             return;
           }
           if (type === 'checkin') {
-            setSignalState('yellow');
+            // 이미 onAttendanceStart에서 yellow로 설정됨
             return;
           }
           if (type === 'rollcall') {
-            setSignalState('red');
+            // 이미 onRollcallName에서 red로 설정됨, 음성 끝나면 green됨
             return;
           }
         }}

@@ -64,12 +64,15 @@ const saveTranscript = (entries) => {
 
 export function useFsdPipeline({
   mode,
+  fsdActive = false,
+  attendanceMode = false,  // true면 출석 대기중 (노란색)
   wsUrl = DEFAULT_WS_URL,
   ttsConfig,
   pdfTitle,
   onAttendanceStart,
   onRollcallName,
-  onAudioEnded
+  onAudioEnded,
+  onAttendanceComplete
 }) {
   const wsRef = useRef(null);
   const audioCtxRef = useRef(null);
@@ -155,6 +158,20 @@ export function useFsdPipeline({
     }, 2000);
   }, [flushPending]);
 
+  const modeRef = useRef(mode);
+  const fsdActiveRef = useRef(fsdActive);
+  const attendanceModeRef = useRef(attendanceMode);
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
+  useEffect(() => {
+    fsdActiveRef.current = fsdActive;
+  }, [fsdActive]);
+  useEffect(() => {
+    attendanceModeRef.current = attendanceMode;
+    console.log('[useFsdPipeline] attendanceMode ref updated:', attendanceMode);
+  }, [attendanceMode]);
+
   const handleServerText = useCallback((message) => {
     if (message.type === 'stt' && message.text) {
       const fragment = String(message.text).trim();
@@ -163,13 +180,16 @@ export function useFsdPipeline({
       pendingRef.current = combined;
       scheduleFlush();
 
-      if (mode === 'defense') {
+      if (fsdActiveRef.current) {
         const now = nowTs();
-        if (fragment.includes('출석') && now - lastAttendanceRef.current > 2000) {
+        // 쿨다운 10초: 오버레이가 사라질 때까지 충분한 시간
+        if (fragment.includes('출석') && now - lastAttendanceRef.current > 10000) {
           lastAttendanceRef.current = now;
           onAttendanceStart?.(fragment);
         }
-        if ((fragment.includes('이상범') || fragment.includes('이상 범') || fragment.includes('이상봉') || fragment.includes('이 상범') || fragment.includes('이 상 범') || fragment.includes('이. 상. 범.')) && now - lastRollcallRef.current > 2000) {
+        // 출석 대기중(노란색)일 때만 호명 감지
+        if (attendanceModeRef.current && (fragment.includes('이상범') || fragment.includes('이상 범') || fragment.includes('이상봉') || fragment.includes('이 상범') || fragment.includes('이 상 범') || fragment.includes('이. 상. 범.')) && now - lastRollcallRef.current > 10000) {
+          console.log('[useFsdPipeline] Name detected, attendanceMode:', attendanceModeRef.current);
           lastRollcallRef.current = now;
           onRollcallName?.(fragment);
         }
@@ -192,8 +212,28 @@ export function useFsdPipeline({
       URL.revokeObjectURL(url);
     } else if (message.type === 'error' && message.error) {
       setError(message.error);
+    } else if (message.type === 'attendance_complete') {
+      console.log('[useFsdPipeline] Attendance complete received');
+      onAttendanceComplete?.();
+    } else if (message.type === 'question_suggestions' && message.questions) {
+      console.log('[useFsdPipeline] Question suggestions received:', message.questions);
+      // 추천 질문들을 sttLines에 추가 (type: 'question')
+      const questions = Array.isArray(message.questions) ? message.questions : [];
+      questions.forEach((q) => {
+        const entry = {
+          ts: Date.now(),
+          text: `💡 추천 질문: ${q}`,
+          type: 'question'
+        };
+        transcriptRef.current.push(entry);
+        if (transcriptRef.current.length > STT_MAX_LINES) {
+          transcriptRef.current.shift();
+        }
+      });
+      setSttLines([...transcriptRef.current]);
+      persistTranscript(transcriptRef.current);
     }
-  }, [appendTranscript, mode, onAttendanceStart, onRollcallName, pdfTitle, sanitizeTitle]);
+  }, [appendTranscript, onAttendanceStart, onRollcallName, onAttendanceComplete, pdfTitle, sanitizeTitle]);
 
   const handleAudio = useCallback((payload) => {
     const size = payload?.byteLength || payload?.size || 'unknown';

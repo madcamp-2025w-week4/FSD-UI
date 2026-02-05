@@ -41,14 +41,26 @@ export default function RightSidebar({ sttLines = [] }) {
                         {sttLines.length === 0 && (
                             <div className="stt-line past">STT 대기 중…</div>
                         )}
-                        {sttLines.map((entry, idx) => (
-                            <div
-                                key={`${entry.ts ?? idx}-${idx}`}
-                                className={`stt-line ${idx === sttLines.length - 1 ? 'current' : 'past'}`}
-                            >
-                                {entry.text ?? entry}
-                            </div>
-                        ))}
+                        {sttLines.map((entry, idx) => {
+                            const isQuestion = entry.type === 'question';
+                            const isCurrent = idx === sttLines.length - 1;
+                            let className = 'stt-line';
+                            if (isQuestion) {
+                                className += ' question';
+                            } else if (isCurrent) {
+                                className += ' current';
+                            } else {
+                                className += ' past';
+                            }
+                            return (
+                                <div
+                                    key={`${entry.ts ?? idx}-${idx}`}
+                                    className={className}
+                                >
+                                    {entry.text ?? entry}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

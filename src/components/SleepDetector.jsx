@@ -3,9 +3,9 @@ import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
 const DEFAULT_THRESHOLD = 0.22;
 const CLOSED_MS = 2000;
-const COOLDOWN_MS = 5000;
+const COOLDOWN_MS = 15000;
 const ABSENT_MS = 5000;
-const ABSENT_COOLDOWN_MS = 8000;
+const ABSENT_COOLDOWN_MS = 15000;
 const CALIBRATION_MS = 2000;
 const EAR_SMOOTHING = 5;
 const MIN_FACE_WIDTH = 0.15;
@@ -87,7 +87,15 @@ export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
     samples: []
   });
   const earHistoryRef = useRef([]);
+  // 콜백을 ref로 저장하여 의존성 배열에서 제거 - 리렌더링 시 쿨다운 리셋 방지
+  const onDrowsyRef = useRef(onDrowsy);
+  const onAbsentRef = useRef(onAbsent);
 
+  // 콜백이 변경되면 ref 업데이트
+  useEffect(() => {
+    onDrowsyRef.current = onDrowsy;
+    onAbsentRef.current = onAbsent;
+  }, [onDrowsy, onAbsent]);
   useEffect(() => {
     if (!enabled) return undefined;
     let cancelled = false;
@@ -143,7 +151,7 @@ export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
           } else if (now - absentStartRef.current >= ABSENT_MS) {
             if (now - lastAbsentRef.current > ABSENT_COOLDOWN_MS) {
               lastAbsentRef.current = now;
-              if (onAbsent) onAbsent();
+              if (onAbsentRef.current) onAbsentRef.current();
             }
           }
           rafRef.current = requestAnimationFrame(tick);
@@ -180,7 +188,7 @@ export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
           } else if (now - closedStartRef.current >= CLOSED_MS) {
             if (now - lastTriggerRef.current > COOLDOWN_MS) {
               lastTriggerRef.current = now;
-              if (onDrowsy) onDrowsy();
+              if (onDrowsyRef.current) onDrowsyRef.current();
             }
           }
         } else {
@@ -205,7 +213,8 @@ export default function SleepDetector({ enabled = true, onDrowsy, onAbsent }) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [enabled, onDrowsy, onAbsent]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled]);
 
   return <video ref={videoRef} muted playsInline style={{ display: 'none' }} />;
 }

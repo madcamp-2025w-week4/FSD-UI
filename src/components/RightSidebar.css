@@ -148,3 +148,11 @@
     color: #0a5fd4;
     box-shadow: 0 8px 18px rgba(0, 122, 255, 0.16);
 }
+
+/* 추천 질문 - 연한 빨간색/분홍색 */
+.stt-line.question {
+    background: rgba(255, 59, 48, 0.12);
+    color: #d32f2f;
+    box-shadow: 0 6px 14px rgba(255, 59, 48, 0.15);
+    font-weight: 600;
+}

@@ -59,9 +59,18 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
     [alertType]
   );
   const copy = useMemo(() => ALERT_COPY[alertType], [alertType]);
+  
+  // onComplete를 ref로 저장하여 클로저 문제 방지
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
-  const startExit = (callback) => {
-    if (exitStartedRef.current) return;
+  const startExit = (completedType) => {
+    if (exitStartedRef.current) {
+      console.log('[WarningOverlay] startExit already in progress, skipping');
+      return;
+    }
     exitStartedRef.current = true;
     setIsExiting(true);
     clearTimeout(exitTimerRef.current);
@@ -69,7 +78,10 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
       setIsVisible(false);
       setIsExiting(false);
       exitStartedRef.current = false;
-      if (callback) callback();
+      console.log('[WarningOverlay] Exit complete, calling onComplete with:', completedType);
+      if (onCompleteRef.current && completedType) {
+        onCompleteRef.current(completedType);
+      }
     }, EXIT_MS);
   };
 
@@ -96,29 +108,26 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
       if (elapsed < durationMs) {
         rafRef.current = requestAnimationFrame(tick);
       } else if (!exitStartedRef.current) {
-        startExit(() => {
-          if (onComplete) onComplete(alertType);
-        });
+        startExit(alertType);
       }
     };
 
     rafRef.current = requestAnimationFrame(tick);
     completeTimerRef.current = setTimeout(() => {
-      startExit(() => {
-        if (onComplete) onComplete(alertType);
-      });
+      startExit(alertType);
     }, durationMs + 50);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       clearTimeout(completeTimerRef.current);
     };
-  }, [alertType, durationMs, onComplete]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alertType, durationMs]);
 
   useEffect(() => {
     if (alertType) return;
     if (!isVisible) return;
-    startExit();
+    startExit(null);  // 취소 시 onComplete 호출 안함
     return () => clearTimeout(exitTimerRef.current);
   }, [alertType, isVisible]);
 
@@ -168,7 +177,8 @@ export default function WarningOverlay({ alertType, onCancel, onComplete }) {
           onClick={() => {
             clearTimeout(completeTimerRef.current);
             cancelAnimationFrame(rafRef.current);
-            startExit(onCancel);
+            startExit(null);  // 취소 시 onComplete 호출 안함
+            if (onCancel) onCancel();
           }}
         >
           취소

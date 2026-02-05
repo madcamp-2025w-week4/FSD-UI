@@ -4,10 +4,7 @@ import { ChevronRight, ChevronLeft } from 'lucide-react';
 
 const ACTIONS = [
   { id: 'sleep', label: '잠' },
-  { id: 'away', label: '자리 비움' },
-  { id: 'checkin', label: '출석 감지' },
-  { id: 'rollcall', label: '호명 출석' },
-  { id: 'attendance', label: '전자 출석' }
+  { id: 'away', label: '자리 비움' }
 ];
 
 export default function TopRightActions({ onTrigger }) {
