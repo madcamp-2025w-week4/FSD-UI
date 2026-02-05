@@ -177,7 +177,17 @@ export CD_TTS_PROMPT_TEXT="참조 음성 텍스트"
 
 ## 👥 Team
 
-| Name | Role |
-| --- | --- |
-| **이상범** | Full-stack Development |
-
+<table>
+  <tr>
+    <td align="center">
+      <b>이상범 (Minseok Yoon)</b><br/>
+      <sub>KAIST CS 21</sub><br/>
+      <sub>KAIST 전산학부</sub>
+    </td>
+    <td align="center">
+      <b>박정우 (Jungwoo Park)</b><br/>
+      <sub>HYU CSE 21</sub><br/>
+      <sub>한양대학교 컴퓨터소프트웨어학부</sub>
+    </td>
+  </tr>
+</table>
