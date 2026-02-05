@@ -163,14 +163,16 @@ export function useFsdPipeline({
       pendingRef.current = combined;
       scheduleFlush();
 
-      const now = nowTs();
-      if (fragment.includes('출석') && now - lastAttendanceRef.current > 2000) {
-        lastAttendanceRef.current = now;
-        onAttendanceStart?.(fragment);
-      }
-      if (fragment.includes('이상범') && now - lastRollcallRef.current > 2000) {
-        lastRollcallRef.current = now;
-        onRollcallName?.(fragment);
+      if (mode === 'defense') {
+        const now = nowTs();
+        if (fragment.includes('출석') && now - lastAttendanceRef.current > 2000) {
+          lastAttendanceRef.current = now;
+          onAttendanceStart?.(fragment);
+        }
+        if ((fragment.includes('이상범') || fragment.includes('이상 범') || fragment.includes('이상봉') || fragment.includes('이 상범') || fragment.includes('이 상 범') || fragment.includes('이. 상. 범.')) && now - lastRollcallRef.current > 2000) {
+          lastRollcallRef.current = now;
+          onRollcallName?.(fragment);
+        }
       }
 
       const endsWithPunc = /[.?!。？！…]$/.test(fragment);
@@ -191,7 +193,7 @@ export function useFsdPipeline({
     } else if (message.type === 'error' && message.error) {
       setError(message.error);
     }
-  }, [appendTranscript, onAttendanceStart, onRollcallName, pdfTitle, sanitizeTitle]);
+  }, [appendTranscript, mode, onAttendanceStart, onRollcallName, pdfTitle, sanitizeTitle]);
 
   const handleAudio = useCallback((payload) => {
     const size = payload?.byteLength || payload?.size || 'unknown';

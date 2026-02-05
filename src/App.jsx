@@ -116,9 +116,11 @@ function App() {
     ttsConfig,
     pdfTitle,
     onAttendanceStart: () => {
+      if (mode !== 'defense') return;
       setAlertType((prev) => (prev ? prev : 'checkin'));
     },
     onRollcallName: () => {
+      if (mode !== 'defense') return;
       setAlertType((prev) => (prev ? prev : 'rollcall'));
     },
     onAudioEnded: () => {
